@@ -1,0 +1,63 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["document-service.service", "nginx.service"]
+restart_services = ["document-service.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["file descriptor leak", "open-file leak", "intentionally retained", "leaked_files"]
+scan_paths = ["/var/lib/fd-service"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/work/{id}"
+id_prefix = "preflight"
+count = 90
+concurrency = 20
+expected_status = 200
+expected_body = "processed"
+request_timeout_seconds = 4
+min_success = 45
+max_success = 76
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/bounded"
+expected_status = 503
+expected_body = "resource pressure"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/work/{id}"
+id_prefix = "verify-{phase}"
+count = 100
+concurrency = 20
+expected_status = 200
+expected_body = "processed"
+request_timeout_seconds = 4
+failure_category = "resource_growth_unbounded"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/bounded"
+expected_status = 200
+expected_body = "bounded"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "resource_growth_unbounded"
