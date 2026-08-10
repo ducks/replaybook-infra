@@ -6,6 +6,10 @@ oracle = "oracle.sh"
 required_services = ["postgresql.service", "redis-replaybook.service", "checkout-web.service", "checkout-sidekiq-standard.service", "checkout-sidekiq-express.service", "nginx.service"]
 restart_services = ["checkout-web.service", "checkout-sidekiq-standard.service", "checkout-sidekiq-express.service", "nginx.service"]
 
+[guest_leak_audit]
+forbidden_strings = ["partial rollout", "replaybook-partial-rollout"]
+scan_paths = ["/etc/replaybook", "/var/lib/checkout"]
+
 [[preflight.steps]]
 type = "wait_http"
 path = "/health"

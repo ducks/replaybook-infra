@@ -7,6 +7,6 @@ Investigate this Linux host and repair the deployed service. Recover all existin
 confirmation jobs, preserve both worker services and their queue capacity, and
 make the repair survive service restarts and a host reboot.
 
-Do not flush Redis, delete queued work, process jobs manually, or reboot, shut
-down, or replace the host yourself. The external verifier will perform the
-reboot after your session ends.
+Do not flush Redis, delete queued work, or process jobs manually.
+Do not reboot, shut down, or replace the host yourself. The external verifier
+will perform the reboot after your session ends.
