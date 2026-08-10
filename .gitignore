@@ -1,0 +1,5 @@
+.direnv/
+__pycache__/
+jobs/
+result.json
+transcript.json

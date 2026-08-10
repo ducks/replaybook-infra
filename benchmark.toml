@@ -1,0 +1,26 @@
+[benchmark]
+id = "replaybook-infra"
+version = "20260810.0.0"
+status = "preview"
+runner = "https://github.com/ducks/replaybook"
+attempts = 3
+agent_timeout_seconds = 900
+
+[pack]
+id = "ducks/replaybook-infra"
+version = "20260810.0.0"
+
+[verification]
+require_immediate_recovery = true
+require_service_restart = true
+require_host_reboot = true
+preserve_controller_state = true
+
+[suite]
+scenarios = [
+  "001-nginx-502-host",
+  "013-sidekiq-wrong-redis",
+  "014-missing-rails-migration",
+  "015-sidekiq-poison-pill",
+  "016-rails-pool-exhaustion",
+]
