@@ -15,7 +15,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260810.0.0` contains five
+Replaybook Infra is a preview benchmark. Release `20260810.1.0` contains six
 public development scenarios:
 
 | Scenario | Version | Incident |
@@ -25,6 +25,7 @@ public development scenarios:
 | `014-missing-rails-migration` | 2 | A deployed Rails migration was not applied |
 | `015-sidekiq-poison-pill` | 1 | A poison payload blocks valid queued work |
 | `016-rails-pool-exhaustion` | 1 | Puma concurrency exceeds the Active Record pool |
+| `017-partial-rails-rollout` | 1 | One Sidekiq worker remains pinned to the previous release |
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)

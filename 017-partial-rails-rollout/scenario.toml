@@ -1,0 +1,108 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["postgresql.service", "redis-replaybook.service", "checkout-web.service", "checkout-sidekiq-standard.service", "checkout-sidekiq-express.service", "nginx.service"]
+restart_services = ["checkout-web.service", "checkout-sidekiq-standard.service", "checkout-sidekiq-express.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["partial rollout", "replaybook-partial-rollout"]
+scan_paths = ["/etc/replaybook", "/var/lib/checkout"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/jobs/{id}/standard"
+id_prefix = "standard"
+count = 2
+concurrency = 2
+expected_status = 202
+record_all_as = "standard_jobs"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "standard_jobs"
+expected_body = "completed:standard:20260810"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/jobs/{id}/express"
+id_prefix = "express"
+count = 3
+concurrency = 3
+expected_status = 202
+record_all_as = "express_backlog"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "express_backlog"
+expected_status = 404
+initial_delay_seconds = 4
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "express_backlog"
+expected_body = "completed:express:20260810"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "backlog_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/jobs/{id}/standard"
+id_prefix = "verify-standard-{phase}"
+count = 3
+concurrency = 3
+expected_status = 202
+record_all_as = "verification_standard_jobs"
+failure_category = "rollout_not_converged"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/jobs/{id}/express"
+id_prefix = "verify-express-{phase}"
+count = 3
+concurrency = 3
+expected_status = 202
+record_all_as = "verification_express_jobs"
+failure_category = "rollout_not_converged"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "verification_standard_jobs"
+expected_body = "completed:standard:20260810"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "rollout_not_converged"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "verification_express_jobs"
+expected_body = "completed:express:20260810"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "rollout_not_converged"
