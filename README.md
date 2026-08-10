@@ -49,13 +49,23 @@ By default, the commands below expect sibling checkouts:
 make validate
 ```
 
+Validate the complete executable benchmark contract without starting a VM:
+
+```sh
+python ../replaybook/integrations/host/run_host_matrix.py \
+  --benchmark ./benchmark.toml \
+  --check
+```
+
 ## Run the reference repair
 
 Every scenario must pass with its controller-only oracle before model results
 are meaningful:
 
 ```sh
-make oracle SCENARIO=014-missing-rails-migration
+python ../replaybook/integrations/host/run_host_matrix.py \
+  --benchmark ./benchmark.toml \
+  --oracle
 ```
 
 ## Run an agent
@@ -71,20 +81,19 @@ make oracle SCENARIO=014-missing-rails-migration
 
 ```sh
 python ../replaybook/integrations/host/run_host_matrix.py \
-  --scenario-pack . \
-  --scenario 001-nginx-502-host \
-  --scenario 013-sidekiq-wrong-redis \
-  --scenario 014-missing-rails-migration \
-  --scenario 015-sidekiq-poison-pill \
-  --scenario 016-rails-pool-exhaustion \
+  --benchmark ./benchmark.toml \
   --models deepseek/deepseek-v4-flash-0731 \
-  --attempts 3 \
   --concurrency 2
 ```
 
-Replaybook records the pack ID and version in every result. Its benchmark
-publisher refuses to combine matrices produced from incompatible pack,
-scenario, harness, timeout, or agent configurations.
+The manifest fixes the pack, scenarios, scenario versions, attempt count,
+timeout, verification policy, and required host harness. A submission still
+chooses its model, reasoning effort, agent adapter, credentials, concurrency,
+and output directory.
+
+Replaybook records the manifest identity and SHA-256 hash in every matrix. Its
+benchmark publisher refuses to combine matrices produced from incompatible
+manifest, pack, scenario, harness, timeout, or agent configurations.
 
 ## Repository boundary
 

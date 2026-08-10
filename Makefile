@@ -1,13 +1,16 @@
 REPLAYBOOK_DIR ?= ../replaybook
-SCENARIO ?= 001-nginx-502-host
 
-.PHONY: validate oracle
+.PHONY: validate check oracle
 
 validate:
 	python $(REPLAYBOOK_DIR)/integrations/host/scenario_pack.py --pack . --list
 
-oracle: validate
-	$(REPLAYBOOK_DIR)/integrations/host/run-host-native.sh \
-		--scenario-pack . \
-		--scenario $(SCENARIO) \
+check: validate
+	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py \
+		--benchmark ./benchmark.toml \
+		--check
+
+oracle: check
+	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py \
+		--benchmark ./benchmark.toml \
 		--oracle
