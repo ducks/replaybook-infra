@@ -1,0 +1,58 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["checkout-node.service", "nginx.service"]
+restart_services = ["checkout-node.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["event loop blocking", "intentionally synchronous"]
+scan_paths = ["/var/lib/checkout-node"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/tasks/{id}"
+id_prefix = "preflight"
+count = 6
+concurrency = 6
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 2.5
+min_success = 1
+max_success = 3
+record_failed_as = "timed_out_tasks"
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "replay_http"
+method = "POST"
+path = "/tasks/{id}"
+ids_from = "timed_out_tasks"
+concurrency = 6
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 3
+failure_category = "tasks_still_serialized"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/tasks/{id}"
+id_prefix = "verify-{phase}"
+count = 6
+concurrency = 6
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 3
+failure_category = "tasks_still_serialized"

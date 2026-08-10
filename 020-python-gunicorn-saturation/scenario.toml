@@ -1,0 +1,76 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["export-web.service", "nginx.service"]
+restart_services = ["export-web.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["gunicorn saturation", "intentionally undersized"]
+scan_paths = ["/etc/replaybook", "/var/lib/export-service"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/exports/{id}"
+id_prefix = "preflight"
+count = 3
+concurrency = 3
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 4
+min_success = 0
+max_success = 1
+record_failed_as = "timed_out_exports"
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "service_not_ready"
+
+[[verify.steps]]
+type = "replay_http"
+method = "POST"
+path = "/exports/{id}"
+ids_from = "timed_out_exports"
+concurrency = 3
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 7
+failure_category = "exports_still_timing_out"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/exports/{id}"
+ids_from = "timed_out_exports"
+concurrency = 3
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 2
+failure_category = "exports_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/exports/{id}"
+id_prefix = "verify-{phase}"
+count = 3
+concurrency = 3
+expected_status = 200
+expected_body = "completed"
+request_timeout_seconds = 7
+failure_category = "exports_still_timing_out"
