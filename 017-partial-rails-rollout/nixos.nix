@@ -3,7 +3,7 @@
 let
   appDir = ./app;
   rubyEnv = pkgs.bundlerEnv {
-    name = "replaybook-partial-rollout-env";
+    name = "checkout-runtime-env";
     gemdir = appDir;
   };
 in
@@ -31,7 +31,7 @@ in
   };
 
   systemd.services.incident-provision = {
-    description = "Provision the Replaybook partial Rails rollout incident";
+    description = "Provision Replaybook checkout services";
     wantedBy = [ "multi-user.target" ];
     after = [ "postgresql.service" "redis-replaybook.service" ];
     requires = [ "postgresql.service" "redis-replaybook.service" ];
