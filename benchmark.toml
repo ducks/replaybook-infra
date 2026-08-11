@@ -2,16 +2,16 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra"
-version = "20260810.2.0"
+version = "20260810.3.0"
 status = "preview"
 attempts = 3
 agent_timeout_seconds = 900
-required_host_harness_version = 12
+required_host_harness_version = 13
 
 [pack]
 path = "."
 id = "ducks/replaybook-infra"
-version = "20260810.2.0"
+version = "20260810.3.0"
 
 [verification]
 require_immediate_recovery = true

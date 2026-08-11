@@ -115,7 +115,7 @@ agent's score requires a scenario version bump.
 
 ## Current limitations
 
-Release `20260810.2.0` is a public development suite with nine scenarios and
+Release `20260810.3.0` is a public development suite with nine scenarios and
 three attempts per scenario in published matrices. It does not yet provide a
 private held-out set, human baseline, or enough operational coverage for a
 universal infrastructure-agent ranking.
