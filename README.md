@@ -15,7 +15,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260810.4.0` contains ten
+Replaybook Infra is a preview benchmark. Release `20260811.0.0` contains ten
 public development scenarios:
 
 | Scenario | Version | Incident |
