@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra"
-version = "20260811.0.0"
+version = "20260811.1.0"
 status = "preview"
 attempts = 3
 agent_timeout_seconds = 900
@@ -11,7 +11,7 @@ required_host_harness_version = 15
 [pack]
 path = "."
 id = "ducks/replaybook-infra"
-version = "20260810.4.0"
+version = "20260811.0.0"
 
 [verification]
 require_immediate_recovery = true
@@ -57,4 +57,8 @@ version = 1
 
 [[scenarios]]
 id = "021-discourse-shared-uploads"
+version = 1
+
+[[scenarios]]
+id = "022-discourse-multisite-migration"
 version = 1
