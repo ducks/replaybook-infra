@@ -1,0 +1,98 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["discourse-web.service", "nginx.service"]
+restart_services = ["discourse-web.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["shared uploads incident", "release-local upload storage"]
+scan_paths = ["/etc/discourse", "/var/lib/discourse"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/uploads/historical-avatar"
+expected_status = 404
+expected_body = "missing"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/uploads/{id}"
+id_prefix = "preflight-upload"
+count = 3
+concurrency = 3
+expected_status = 201
+expected_body = "stored"
+record_all_as = "accepted_uploads"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/uploads/{id}"
+ids_from = "accepted_uploads"
+expected_status = 200
+expected_body = "present"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "service_not_ready"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/uploads/historical-avatar"
+expected_status = 200
+expected_body = "present"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_uploads_not_recovered"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/uploads/{id}"
+ids_from = "accepted_uploads"
+expected_status = 200
+expected_body = "present"
+request_timeout_seconds = 2
+failure_category = "accepted_uploads_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/uploads/{id}"
+id_prefix = "verify-upload-{phase}"
+count = 3
+concurrency = 3
+expected_status = 201
+expected_body = "stored"
+record_all_as = "fresh_uploads"
+failure_category = "uploads_not_writable"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/uploads/{id}"
+ids_from = "fresh_uploads"
+expected_status = 200
+expected_body = "present"
+request_timeout_seconds = 2
+failure_category = "uploads_not_durable"
