@@ -6,7 +6,7 @@ version = "20260810.4.0"
 status = "preview"
 attempts = 3
 agent_timeout_seconds = 900
-required_host_harness_version = 13
+required_host_harness_version = 14
 
 [pack]
 path = "."
