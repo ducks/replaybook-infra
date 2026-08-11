@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra"
-version = "20260810.3.0"
+version = "20260810.4.0"
 status = "preview"
 attempts = 3
 agent_timeout_seconds = 900
@@ -11,7 +11,7 @@ required_host_harness_version = 13
 [pack]
 path = "."
 id = "ducks/replaybook-infra"
-version = "20260810.3.0"
+version = "20260810.4.0"
 
 [verification]
 require_immediate_recovery = true
@@ -53,4 +53,8 @@ version = 1
 
 [[scenarios]]
 id = "020-python-gunicorn-saturation"
+version = 1
+
+[[scenarios]]
+id = "021-discourse-shared-uploads"
 version = 1
