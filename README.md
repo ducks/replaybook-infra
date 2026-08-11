@@ -15,7 +15,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260811.0.0` contains ten
+Replaybook Infra is a preview benchmark. Release `20260811.1.0` contains eleven
 public development scenarios:
 
 | Scenario | Version | Incident |
@@ -30,6 +30,7 @@ public development scenarios:
 | `019-rust-fd-leak` | 1 | A Rust service retains one file descriptor per request |
 | `020-python-gunicorn-saturation` | 1 | Gunicorn kills undersized workers during concurrent exports |
 | `021-discourse-shared-uploads` | 1 | A Discourse deploy stores uploads inside the active release instead of shared storage |
+| `022-discourse-multisite-migration` | 1 | One Discourse tenant missed a deployed database migration |
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
