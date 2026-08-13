@@ -1,0 +1,216 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["session-old.service", "session-new.service", "nginx.service"]
+restart_services = ["session-old.service", "session-new.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["auth secret rollout", "compromised_secret_retained"]
+scan_paths = ["/etc/replaybook", "/var/lib/session-app"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/old/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/new/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/old/release"
+expected_status = 200
+expected_body = "20260811"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/new/release"
+expected_status = 200
+expected_body = "20260812"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/old/sessions/{id}"
+id_prefix = "active-before-rotation"
+count = 4
+concurrency = 4
+expected_status = 201
+expected_body = "created"
+record_all_as = "legacy_sessions"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/old/sessions/{id}"
+ids_from = "legacy_sessions"
+expected_status = 200
+expected_body = "authenticated"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/new/sessions/{id}"
+ids_from = "legacy_sessions"
+expected_status = 401
+expected_body = "unauthorized"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/new/sessions/{id}"
+id_prefix = "active-after-rotation"
+count = 3
+concurrency = 3
+expected_status = 201
+expected_body = "created"
+record_all_as = "current_sessions"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/new/sessions/{id}"
+ids_from = "current_sessions"
+expected_status = 200
+expected_body = "authenticated"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/old/sessions/{id}"
+ids_from = "current_sessions"
+expected_status = 401
+expected_body = "unauthorized"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/old/release"
+expected_status = 200
+expected_body = "20260812"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "rollout_incomplete"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/new/release"
+expected_status = 200
+expected_body = "20260812"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "rollout_incomplete"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/old/sessions/{id}"
+ids_from = "legacy_sessions"
+expected_status = 200
+expected_body = "authenticated"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "old_sessions_lost"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/new/sessions/{id}"
+ids_from = "legacy_sessions"
+expected_status = 200
+expected_body = "authenticated"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "old_sessions_lost"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/old/sessions/{id}"
+ids_from = "current_sessions"
+expected_status = 200
+expected_body = "authenticated"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "compromised_secret_retained"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/new/sessions/{id}"
+ids_from = "current_sessions"
+expected_status = 200
+expected_body = "authenticated"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "current_sessions_unavailable"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/old/sessions/revoked-session"
+expected_status = 401
+expected_body = "unauthorized"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "revoked_session_restored"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/new/sessions/revoked-session"
+expected_status = 401
+expected_body = "unauthorized"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "revoked_session_restored"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "GET"
+path = "/old/sessions/{id}"
+id_prefix = "invalid-session-{phase}"
+count = 3
+concurrency = 3
+expected_status = 401
+expected_body = "unauthorized"
+failure_category = "auth_bypassed"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/old/sessions/{id}"
+id_prefix = "fresh-session-{phase}"
+count = 3
+concurrency = 3
+expected_status = 201
+expected_body = "created"
+record_all_as = "fresh_sessions"
+failure_category = "current_sessions_unavailable"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/new/sessions/{id}"
+ids_from = "fresh_sessions"
+expected_status = 200
+expected_body = "authenticated"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "compromised_secret_retained"
