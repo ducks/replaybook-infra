@@ -1,0 +1,145 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["postgresql.service", "discourse-web-blue.service", "discourse-web-green.service", "discourse-export-worker.service", "nginx.service"]
+restart_services = ["discourse-web-blue.service", "discourse-web-green.service", "discourse-export-worker.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["interrupted deploy", "stale application process", "partially applied migration"]
+scan_paths = ["/etc/discourse", "/var/lib/discourse"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/blue/release"
+expected_status = 200
+expected_body = "20260814"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/green/release"
+expected_status = 200
+expected_body = "20260813"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/blue/schema"
+expected_status = 503
+expected_body = "incomplete"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/exports/{id}"
+id_prefix = "accepted-export"
+count = 3
+concurrency = 3
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "accepted_exports"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/exports/{id}/attempts"
+ids_from = "accepted_exports"
+body_integer_min = 1
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/exports/{id}"
+ids_from = "accepted_exports"
+expected_status = 409
+expected_body = "pending"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/blue/release"
+expected_status = 200
+expected_body = "20260814"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "release_not_converged"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/green/release"
+expected_status = 200
+expected_body = "20260814"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "release_not_converged"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/blue/schema"
+expected_status = 200
+expected_body = "complete"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "migration_not_completed"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/green/schema"
+expected_status = 200
+expected_body = "complete"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "migration_not_completed"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/exports/{id}"
+ids_from = "accepted_exports"
+expected_status = 200
+expected_body = "completed:20260814"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "accepted_exports_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/exports/{id}"
+id_prefix = "verify-export-{phase}"
+count = 4
+concurrency = 4
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "verification_exports"
+failure_category = "new_exports_not_accepted"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/exports/{id}"
+ids_from = "verification_exports"
+expected_status = 200
+expected_body = "completed:20260814"
+timeout_seconds = 45
+request_timeout_seconds = 2
+failure_category = "new_exports_not_completed"
