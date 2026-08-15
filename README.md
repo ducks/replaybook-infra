@@ -15,7 +15,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260812.0.0` contains twelve
+Replaybook Infra is a preview benchmark. Release `20260814.0.0` contains thirteen
 public development scenarios:
 
 | Scenario | Version | Incident |
@@ -32,6 +32,7 @@ public development scenarios:
 | `021-discourse-shared-uploads` | 1 | A Discourse deploy stores uploads inside the active release instead of shared storage |
 | `022-discourse-multisite-migration` | 1 | One Discourse tenant missed a deployed database migration |
 | `023-auth-secret-rollout` | 1 | A rolling deployment split active sessions across signing secrets |
+| `024-discourse-interrupted-deploy` | 1 | An interrupted Discourse deploy leaves the schema incomplete and one web instance on the previous release |
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
