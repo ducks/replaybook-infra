@@ -15,8 +15,8 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260814.0.0` contains thirteen
-public development scenarios:
+Replaybook Infra is a preview benchmark. Release `20260815.0.0` contains thirteen
+public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
 |---|---:|---|
@@ -33,6 +33,13 @@ public development scenarios:
 | `022-discourse-multisite-migration` | 1 | One Discourse tenant missed a deployed database migration |
 | `023-auth-secret-rollout` | 1 | A rolling deployment split active sessions across signing secrets |
 | `024-discourse-interrupted-deploy` | 1 | An interrupted Discourse deploy leaves the schema incomplete and one web instance on the previous release |
+| `025-discourse-bootstrap` | 1 | A fresh host must become a durable, production-style Discourse Docker deployment |
+
+The core `benchmark.toml` retains the thirteen 15-minute incident scenarios.
+The resource-heavy `025-discourse-bootstrap` scenario uses
+`benchmark-real.toml`, one attempt, and a 30-minute agent deadline. It runs a
+real pinned Discourse Docker build rather than the synthetic Discourse-shaped
+services used by the incident suite.
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
@@ -73,6 +80,14 @@ are meaningful:
 ```sh
 python ../replaybook/integrations/host/run_host_matrix.py \
   --benchmark ./benchmark.toml \
+  --oracle
+```
+
+Run the real Discourse deployment oracle separately:
+
+```sh
+python ../replaybook/integrations/host/run_host_matrix.py \
+  --benchmark ./benchmark-real.toml \
   --oracle
 ```
 

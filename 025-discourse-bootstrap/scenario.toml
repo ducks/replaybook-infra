@@ -1,0 +1,45 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["docker.service", "discourse-edge.service"]
+restart_services = ["docker.service", "discourse-edge.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["reference deployment", "oracle repair", "fake Discourse response"]
+scan_paths = ["/etc/replaybook", "/var/lib/replaybook"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/srv/status"
+expected_status = 503
+expected_body = "setup-required"
+timeout_seconds = 60
+request_timeout_seconds = 3
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/srv/status"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 300
+request_timeout_seconds = 10
+failure_category = "discourse_not_healthy"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/site.json"
+expected_status = 200
+timeout_seconds = 120
+request_timeout_seconds = 15
+failure_category = "discourse_site_unavailable"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/about.json"
+expected_status = 200
+timeout_seconds = 120
+request_timeout_seconds = 15
+failure_category = "discourse_application_unavailable"
