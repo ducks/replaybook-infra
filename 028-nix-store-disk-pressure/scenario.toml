@@ -1,0 +1,123 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["billing-ledger.service", "nginx.service"]
+restart_services = ["billing-ledger.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["nix store disk pressure", "CACHE_WARMUP=disabled", "replaybook-disk-pressure-answer"]
+scan_paths = ["/etc/replaybook", "/var/lib/billing-ledger"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 507
+expected_body = "low_disk"
+timeout_seconds = 180
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/archive"
+expected_status = 200
+expected_body = "intact"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "protected_archive_missing"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/receipts/historical-20260815-a"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_receipts_missing"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/receipts/historical-20260816-b"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_receipts_missing"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/receipts/historical-20260817-c"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_receipts_missing"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "writable_capacity_not_recovered"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/archive"
+expected_status = 200
+expected_body = "intact"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "protected_archive_lost"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/receipts/historical-20260815-a"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_receipts_lost"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/receipts/historical-20260816-b"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_receipts_lost"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/receipts/historical-20260817-c"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "historical_receipts_lost"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/receipts/{id}"
+id_prefix = "verification-receipt-{phase}"
+count = 6
+concurrency = 3
+expected_status = 201
+expected_body = "stored"
+record_all_as = "verification_receipts"
+failure_category = "new_receipts_not_writable"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/receipts/{id}"
+ids_from = "verification_receipts"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "new_receipts_not_durable"
