@@ -1,0 +1,197 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["postgresql.service", "order-api-blue.service", "order-api-green.service", "nginx.service"]
+restart_services = ["order-api-blue.service", "order-api-green.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["partial service rollout", "intentionally skipped migration", "replaybook-rollout-answer"]
+scan_paths = ["/etc/order-api", "/var/lib/order-api"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/blue/release"
+expected_status = 200
+expected_body = "20260817"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/green/release"
+expected_status = 200
+expected_body = "20260816"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/blue/schema"
+expected_status = 503
+expected_body = "incompatible"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/instances/green/orders/{id}"
+id_prefix = "accepted-order"
+count = 4
+concurrency = 4
+expected_status = 201
+expected_body = "stored"
+record_all_as = "accepted_orders"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/orders/{id}"
+id_prefix = "mixed-rollout-probe"
+count = 8
+concurrency = 1
+expected_status = 201
+expected_body = "stored"
+min_success = 2
+max_success = 6
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/blue/release"
+expected_status = 200
+expected_body = "20260817"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "release_not_converged"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/green/release"
+expected_status = 200
+expected_body = "20260817"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "release_not_converged"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/blue/schema"
+expected_status = 200
+expected_body = "complete"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "migration_not_applied"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/green/schema"
+expected_status = 200
+expected_body = "complete"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "migration_not_applied"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/instances/blue/orders/{id}"
+ids_from = "accepted_orders"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "accepted_orders_lost"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/instances/green/orders/{id}"
+ids_from = "accepted_orders"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "accepted_orders_lost"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/orders/{id}"
+id_prefix = "verify-order-{phase}"
+count = 8
+concurrency = 4
+expected_status = 201
+expected_body = "stored"
+record_all_as = "verification_orders"
+failure_category = "traffic_not_converged"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/instances/blue/orders/{id}"
+ids_from = "verification_orders"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "new_orders_unavailable"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/instances/green/orders/{id}"
+ids_from = "verification_orders"
+expected_status = 200
+expected_body = "stored"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "new_orders_unavailable"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "GET"
+path = "/release?probe={id}"
+id_prefix = "release-probe-{phase}"
+count = 8
+concurrency = 4
+expected_status = 200
+expected_body = "20260817"
+failure_category = "load_balancer_not_converged"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "GET"
+path = "/instance?blue-probe={id}"
+id_prefix = "blue-backend-probe-{phase}"
+count = 8
+concurrency = 1
+expected_status = 200
+expected_body = "blue"
+min_success = 2
+max_success = 6
+failure_category = "backend_removed_from_rotation"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "GET"
+path = "/instance?green-probe={id}"
+id_prefix = "green-backend-probe-{phase}"
+count = 8
+concurrency = 1
+expected_status = 200
+expected_body = "green"
+min_success = 2
+max_success = 6
+failure_category = "backend_removed_from_rotation"
