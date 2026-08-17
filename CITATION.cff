@@ -7,6 +7,6 @@ authors:
     given-names: Jake
 repository-code: "https://github.com/ducks/replaybook-infra"
 url: "https://replaybook.dev/benchmarks.html"
-version: "20260810.0.0"
-date-released: "2026-08-10"
+version: "20260816.0.0"
+date-released: "2026-08-16"
 license: MIT

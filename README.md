@@ -15,7 +15,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260815.0.0` contains thirteen
+Replaybook Infra is a preview benchmark. Release `20260816.0.0` contains fourteen
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
@@ -34,8 +34,9 @@ public incident scenarios and one real-application deployment scenario:
 | `023-auth-secret-rollout` | 1 | A rolling deployment split active sessions across signing secrets |
 | `024-discourse-interrupted-deploy` | 1 | An interrupted Discourse deploy leaves the schema incomplete and one web instance on the previous release |
 | `025-discourse-bootstrap` | 1 | A fresh host must become a durable, production-style Discourse Docker deployment |
+| `026-discourse-plugin-boot-loop` | 1 | An installed Discourse plugin is incompatible with the deployed core API and crashes web and Sidekiq |
 
-The core `benchmark.toml` retains the thirteen 15-minute incident scenarios.
+The core `benchmark.toml` contains the fourteen 15-minute incident scenarios.
 The resource-heavy `025-discourse-bootstrap` scenario uses
 `benchmark-real.toml`, one attempt, and a 30-minute agent deadline. It runs a
 real pinned Discourse Docker build rather than the synthetic Discourse-shaped
