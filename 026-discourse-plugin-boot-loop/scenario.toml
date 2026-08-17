@@ -1,0 +1,138 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["postgresql.service", "discourse-web.service", "discourse-sidekiq.service", "nginx.service"]
+restart_services = ["discourse-web.service", "discourse-sidekiq.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["reference repair", "controller verifier", "expected plugin patch"]
+scan_paths = ["/etc/discourse", "/var/lib/discourse"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/topics/{id}"
+id_prefix = "accepted-topic"
+count = 3
+concurrency = 1
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "accepted_topics"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 502
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "web_not_recovered"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/core/release"
+expected_status = 200
+expected_body = "20260816"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "core_release_rolled_back"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/core/plugin-api"
+expected_status = 200
+expected_body = "2"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "core_api_rolled_back"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/plugin/status"
+expected_status = 200
+expected_body = "enabled:discourse-presence:api2"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "plugin_not_preserved"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/topics/{id}"
+ids_from = "accepted_topics"
+expected_status = 200
+expected_body = "published"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "accepted_topics_not_preserved"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/uploads/{id}"
+ids_from = "accepted_topics"
+expected_status = 200
+expected_body = "preserved"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "accepted_uploads_not_preserved"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/plugin-data/{id}"
+ids_from = "accepted_topics"
+expected_status = 200
+expected_body = "preserved"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "plugin_data_not_preserved"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "accepted_topics"
+expected_status = 200
+expected_body = "completed:1"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "accepted_jobs_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/topics/{id}"
+id_prefix = "verify-topic-{phase}"
+count = 3
+concurrency = 3
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "verification_topics"
+failure_category = "new_topics_not_accepted"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/jobs/{id}"
+ids_from = "verification_topics"
+expected_status = 200
+expected_body = "completed:1"
+timeout_seconds = 45
+request_timeout_seconds = 2
+failure_category = "new_jobs_not_completed"

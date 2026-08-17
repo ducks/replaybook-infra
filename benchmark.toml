@@ -2,16 +2,16 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra"
-version = "20260815.0.0"
+version = "20260816.0.0"
 status = "preview"
 attempts = 3
 agent_timeout_seconds = 900
-required_host_harness_version = 17
+required_host_harness_version = 19
 
 [pack]
 path = "."
 id = "ducks/replaybook-infra"
-version = "20260815.0.0"
+version = "20260816.0.0"
 
 [verification]
 require_immediate_recovery = true
@@ -69,4 +69,8 @@ version = 1
 
 [[scenarios]]
 id = "024-discourse-interrupted-deploy"
+version = 1
+
+[[scenarios]]
+id = "026-discourse-plugin-boot-loop"
 version = 1
