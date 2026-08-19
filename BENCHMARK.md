@@ -74,6 +74,22 @@ Reasoning effort is recorded as a distinct model configuration. Results from
 different benchmark or verifier versions remain in versioned history rather
 than being silently mixed.
 
+## Benchmark tiers
+
+Replaybook Infra exposes four separately hashed benchmark contracts:
+
+- **Smoke** uses three scenarios and one attempt to qualify a model or harness.
+- **Core** uses eight representative scenarios and three attempts for routine
+  comparison.
+- **Full** uses every stable incident scenario and three attempts for published
+  reliability evidence.
+- **Frontier** contains unusually expensive real-system tasks with their own
+  deadlines and attempt counts.
+
+Tiers are budget and workflow boundaries, not interchangeable samples. Results
+from smoke, core, full, and frontier are never silently pooled. A published
+comparison names the tier and exact manifest digest that produced it.
+
 ## Scenario requirements
 
 Every scenario must contain:
@@ -115,7 +131,8 @@ agent's score requires a scenario version bump.
 
 ## Current limitations
 
-Release `20260817.0.0` is a public development suite with fifteen incident
-scenarios and three attempts per scenario in published matrices. It does not
+Release `20260817.1.0` is a public development suite with sixteen incident
+scenarios, one real-application scenario, and explicit smoke, core, full, and
+frontier evaluation tiers. It does not
 yet provide a private held-out set, human baseline, or enough operational
 coverage for a universal infrastructure-agent ranking.
