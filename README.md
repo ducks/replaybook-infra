@@ -55,6 +55,12 @@ sixteen 15-minute incident scenarios. Frontier runs a real pinned Discourse
 Docker build rather than the synthetic Discourse-shaped services used by the
 incident suite.
 
+Every manifest declares its tier explicitly. Replaybook host harness v22
+records that value in matrix summaries, submission bundles, public APIs, and
+release pages, and refuses to aggregate results across tiers. The tier-aware
+manifest revision is `20260819.0.1`; the scenario pack remains
+`20260817.1.0` because no incident or scoring behavior changed.
+
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
 for the scoring contract, compatibility requirements, and current limitations.

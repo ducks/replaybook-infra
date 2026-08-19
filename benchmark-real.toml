@@ -2,11 +2,12 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra-real"
-version = "20260819.0.0"
+version = "20260819.0.1"
 status = "preview"
+tier = "frontier"
 attempts = 1
 agent_timeout_seconds = 1800
-required_host_harness_version = 21
+required_host_harness_version = 22
 
 [pack]
 path = "."
