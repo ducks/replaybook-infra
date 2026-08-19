@@ -38,11 +38,22 @@ public incident scenarios and one real-application deployment scenario:
 | `027-partial-service-rollout` | 1 | A load-balanced order API mixes incompatible application generations before its database migration completes |
 | `028-nix-store-disk-pressure` | 1 | An unbounded Nix cache refresh exhausts disk and forces a stateful ledger into read-only protection |
 
-The core `benchmark.toml` contains the sixteen 15-minute incident scenarios.
-The resource-heavy `025-discourse-bootstrap` scenario uses
-`benchmark-real.toml`, one attempt, and a 30-minute agent deadline. It runs a
-real pinned Discourse Docker build rather than the synthetic Discourse-shaped
-services used by the incident suite.
+Four executable tiers support different evaluation budgets:
+
+| Tier | Manifest | Trials per model | Intended use |
+|---|---|---:|---|
+| Smoke | `benchmark-smoke.toml` | 3 | Qualify a new model or harness before spending on a wider run |
+| Core | `benchmark-core.toml` | 24 | Compare representative stateful repairs across languages and failure types |
+| Full | `benchmark.toml` | 48 | Produce publication-grade evidence across all stable incident scenarios |
+| Frontier | `benchmark-real.toml` | 1 | Exercise the resource-heavy real Discourse bootstrap with a 30-minute deadline |
+
+Smoke deliberately combines the basic Nginx incident with interrupted
+deployment and Nix disk-pressure scenarios. Core spans proxying, Redis and
+queue state, rolling deployment, Rust resource leakage, shared uploads, an
+interrupted Discourse deployment, and host disk recovery. Full contains all
+sixteen 15-minute incident scenarios. Frontier runs a real pinned Discourse
+Docker build rather than the synthetic Discourse-shaped services used by the
+incident suite.
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
@@ -67,7 +78,13 @@ By default, the commands below expect sibling checkouts:
 make validate
 ```
 
-Validate the complete executable benchmark contract without starting a VM:
+Validate every executable benchmark tier without starting a VM:
+
+```sh
+make check
+```
+
+Validate one tier directly:
 
 ```sh
 python ../replaybook/integrations/host/run_host_matrix.py \
@@ -120,6 +137,39 @@ and output directory.
 Replaybook records the manifest identity and SHA-256 hash in every matrix. Its
 benchmark publisher refuses to combine matrices produced from incompatible
 manifest, pack, scenario, harness, timeout, or agent configurations.
+
+## Choose a benchmark tier
+
+Start a new model or harness with smoke:
+
+```sh
+python ../replaybook/integrations/host/run_host_matrix.py \
+  --benchmark ./benchmark-smoke.toml \
+  --models openrouter/model-id \
+  --reasoning-efforts high \
+  --concurrency 2
+```
+
+Move promising configurations to core, then full:
+
+```sh
+python ../replaybook/integrations/host/run_host_matrix.py \
+  --benchmark ./benchmark-core.toml \
+  --models openrouter/model-id \
+  --reasoning-efforts high \
+  --concurrency 2
+
+python ../replaybook/integrations/host/run_host_matrix.py \
+  --benchmark ./benchmark.toml \
+  --models openrouter/model-id \
+  --reasoning-efforts high \
+  --concurrency 2
+```
+
+Tier results remain separate compatibility cohorts because scenario selection,
+attempt count, timeout, and manifest hash are part of the benchmark identity.
+Passing smoke does not count as a partial full-suite score. It is a controlled
+qualification step that limits spend before running broader evidence.
 
 ## Repository boundary
 
