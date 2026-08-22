@@ -49,6 +49,11 @@ Four executable tiers support different evaluation budgets:
 | Full | `benchmark.toml` | 54 | Produce publication-grade evidence across all stable incident scenarios |
 | Frontier | `benchmark-real.toml` | 1 | Exercise the resource-heavy real Discourse bootstrap with a 30-minute deadline |
 
+The separately versioned `benchmark-visual.toml` manifest runs the two visual
+incident scenarios three times each. It provides one consistent comparison
+set for image-capable models without mixing text-only incidents into the
+denominator.
+
 Smoke deliberately combines the basic Nginx incident with interrupted
 deployment and Nix disk-pressure scenarios. Core spans proxying, Redis and
 queue state, rolling deployment, Rust resource leakage, shared uploads, an

@@ -1,0 +1,28 @@
+schema_version = 1
+
+[benchmark]
+id = "replaybook-infra-visual"
+version = "20260822.0.0"
+status = "preview"
+attempts = 3
+agent_timeout_seconds = 900
+required_host_harness_version = 23
+
+[pack]
+path = "."
+id = "ducks/replaybook-infra"
+version = "20260822.1.0"
+
+[verification]
+require_immediate_recovery = true
+require_service_restart = true
+require_host_reboot = true
+preserve_controller_state = true
+
+[[scenarios]]
+id = "029-visual-topology-drift"
+version = 1
+
+[[scenarios]]
+id = "030-visual-metrics-regression"
+version = 1
