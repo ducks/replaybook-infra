@@ -131,7 +131,7 @@ agent's score requires a scenario version bump.
 
 ## Current limitations
 
-Release `20260817.1.0` is a public development suite with sixteen incident
+Release `20260822.0.0` is a public development suite with seventeen incident
 scenarios, one real-application scenario, and explicit smoke, core, full, and
 frontier evaluation tiers. It does not
 yet provide a private held-out set, human baseline, or enough operational

@@ -1,0 +1,83 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+image_artifacts = ["topology.png"]
+required_services = ["postgresql.service", "redis-reservations.service", "reservation-api.service", "reservation-worker.service", "incident-nginx.service"]
+restart_services = ["reservation-api.service", "reservation-worker.service", "incident-nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["visual topology drift", "intentionally wrong queue database", "replaybook-visual-answer"]
+scan_paths = ["/etc/reservation-api", "/var/lib/postgresql", "/var/lib/redis-reservations"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 502
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/reservations/{id}"
+id_prefix = "accepted-reservation"
+count = 4
+concurrency = 4
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "accepted_reservations"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/reservations/{id}"
+ids_from = "accepted_reservations"
+expected_status = 200
+expected_body = "pending"
+initial_delay_seconds = 3
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "edge_topology_not_recovered"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/reservations/{id}"
+ids_from = "accepted_reservations"
+expected_status = 200
+expected_body = "completed"
+timeout_seconds = 45
+request_timeout_seconds = 2
+failure_category = "accepted_reservations_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/reservations/{id}"
+id_prefix = "verify-reservation-{phase}"
+count = 6
+concurrency = 3
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "verification_reservations"
+failure_category = "new_reservations_not_accepted"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/reservations/{id}"
+ids_from = "verification_reservations"
+expected_status = 200
+expected_body = "completed"
+timeout_seconds = 45
+request_timeout_seconds = 2
+failure_category = "new_reservations_not_completed"
