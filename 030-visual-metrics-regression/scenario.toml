@@ -1,0 +1,72 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+image_artifacts = ["metrics-dashboard.png"]
+required_services = ["metrics-api.service", "nginx.service"]
+restart_services = ["metrics-api.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["visual metrics regression", "intentionally unbounded cache", "replaybook-metrics-answer"]
+scan_paths = ["/etc/metrics-api", "/var/lib/metrics-api"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/reports/{id}"
+id_prefix = "preflight-report"
+count = 96
+concurrency = 16
+expected_status = 200
+expected_body = "rendered"
+request_timeout_seconds = 4
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 503
+expected_body = "memory_pressure"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "memory_pressure_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/reports/{id}"
+id_prefix = "verification-report-{phase}"
+count = 120
+concurrency = 20
+expected_status = 200
+expected_body = "rendered"
+request_timeout_seconds = 4
+failure_category = "report_capacity_not_recovered"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "cache_growth_unbounded"

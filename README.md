@@ -15,7 +15,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra is a preview benchmark. Release `20260822.0.0` contains seventeen
+Replaybook Infra is a preview benchmark. Release `20260822.1.0` contains eighteen
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
@@ -38,6 +38,7 @@ public incident scenarios and one real-application deployment scenario:
 | `027-partial-service-rollout` | 1 | A load-balanced order API mixes incompatible application generations before its database migration completes |
 | `028-nix-store-disk-pressure` | 1 | An unbounded Nix cache refresh exhausts disk and forces a stateful ledger into read-only protection |
 | `029-visual-topology-drift` | 1 | A reservation service has edge routing and queue-consumer drift from its authoritative topology diagram |
+| `030-visual-metrics-regression` | 1 | A report renderer's cache and memory growth must be diagnosed from an operational dashboard |
 
 Four executable tiers support different evaluation budgets:
 
@@ -45,22 +46,22 @@ Four executable tiers support different evaluation budgets:
 |---|---|---:|---|
 | Smoke | `benchmark-smoke.toml` | 3 | Qualify a new model or harness before spending on a wider run |
 | Core | `benchmark-core.toml` | 24 | Compare representative stateful repairs across languages and failure types |
-| Full | `benchmark.toml` | 51 | Produce publication-grade evidence across all stable incident scenarios |
+| Full | `benchmark.toml` | 54 | Produce publication-grade evidence across all stable incident scenarios |
 | Frontier | `benchmark-real.toml` | 1 | Exercise the resource-heavy real Discourse bootstrap with a 30-minute deadline |
 
 Smoke deliberately combines the basic Nginx incident with interrupted
 deployment and Nix disk-pressure scenarios. Core spans proxying, Redis and
 queue state, rolling deployment, Rust resource leakage, shared uploads, an
 interrupted Discourse deployment, and host disk recovery. Full contains all
-seventeen 15-minute incident scenarios, including one whose architecture is
-supplied as an image artifact. Frontier runs a real pinned Discourse
+eighteen 15-minute incident scenarios, including topology and operational
+metrics incidents supplied as image artifacts. Frontier runs a real pinned Discourse
 Docker build rather than the synthetic Discourse-shaped services used by the
 incident suite.
 
 Every manifest declares its tier explicitly. Replaybook host harness v23
 records that value in matrix summaries, submission bundles, public APIs, and
 release pages, and refuses to aggregate results across tiers. The tier-aware
-full-tier manifest and scenario-pack revision is `20260822.0.0`. The smoke,
+full-tier manifest and scenario-pack revision is `20260822.1.0`. The smoke,
 core, and frontier selections remain unchanged while referencing the current
 pack revision.
 
