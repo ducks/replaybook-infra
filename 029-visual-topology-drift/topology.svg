@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#20344a"/>
+    </marker>
+    <style>
+      .title { font: 700 34px sans-serif; fill: #152536; }
+      .subtitle { font: 18px sans-serif; fill: #536579; }
+      .box-title { font: 700 22px sans-serif; fill: #152536; }
+      .box-body { font: 17px sans-serif; fill: #2c4156; }
+      .edge { stroke: #20344a; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .edge-label { font: 600 15px sans-serif; fill: #20344a; }
+      .zone { fill: #f7fafc; stroke: #9fb1c3; stroke-width: 2; stroke-dasharray: 9 7; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" fill="#eef3f7"/>
+  <text x="60" y="62" class="title">Reservation Service — Production Topology</text>
+  <text x="60" y="94" class="subtitle">Authoritative routing, queue, and persistence relationships</text>
+
+  <rect x="55" y="165" width="190" height="105" rx="18" fill="#fff4cf" stroke="#d7aa29" stroke-width="3"/>
+  <text x="150" y="207" text-anchor="middle" class="box-title">Clients</text>
+  <text x="150" y="238" text-anchor="middle" class="box-body">public HTTP</text>
+
+  <rect x="340" y="150" width="235" height="135" rx="18" fill="#d9ecff" stroke="#4386bd" stroke-width="3"/>
+  <text x="458" y="195" text-anchor="middle" class="box-title">Nginx Edge</text>
+  <text x="458" y="228" text-anchor="middle" class="box-body">listen :80</text>
+  <text x="458" y="256" text-anchor="middle" class="box-body">systemd managed</text>
+
+  <rect x="700" y="150" width="260" height="135" rx="18" fill="#daf5e4" stroke="#3b9860" stroke-width="3"/>
+  <text x="830" y="195" text-anchor="middle" class="box-title">Reservation API</text>
+  <text x="830" y="228" text-anchor="middle" class="box-body">127.0.0.1:3100</text>
+  <text x="830" y="256" text-anchor="middle" class="box-body">accept + query state</text>
+
+  <rect x="230" y="355" width="900" height="300" rx="24" class="zone"/>
+  <text x="260" y="392" class="box-title">Persistent processing zone</text>
+
+  <rect x="275" y="445" width="210" height="130" rx="18" fill="#eadfff" stroke="#7656ad" stroke-width="3"/>
+  <text x="380" y="489" text-anchor="middle" class="box-title">PostgreSQL</text>
+  <text x="380" y="522" text-anchor="middle" class="box-body">reservations DB</text>
+  <text x="380" y="550" text-anchor="middle" class="box-body">127.0.0.1:5432</text>
+
+  <rect x="925" y="445" width="170" height="130" rx="18" fill="#ffe0e0" stroke="#b84c4c" stroke-width="3"/>
+  <text x="1010" y="489" text-anchor="middle" class="box-title">Redis</text>
+  <text x="1010" y="522" text-anchor="middle" class="box-body">queue DB 4</text>
+  <text x="1010" y="550" text-anchor="middle" class="box-body">:6379</text>
+
+  <rect x="610" y="445" width="235" height="130" rx="18" fill="#dff4f4" stroke="#3f8f91" stroke-width="3"/>
+  <text x="728" y="489" text-anchor="middle" class="box-title">Queue Worker</text>
+  <text x="728" y="522" text-anchor="middle" class="box-body">reservations:pending</text>
+  <text x="728" y="550" text-anchor="middle" class="box-body">systemd managed</text>
+
+  <path d="M245 218 L340 218" class="edge"/>
+  <text x="292" y="203" text-anchor="middle" class="edge-label">HTTP</text>
+  <path d="M575 218 L700 218" class="edge"/>
+  <text x="638" y="190" text-anchor="middle" class="edge-label">/health</text>
+  <text x="638" y="211" text-anchor="middle" class="edge-label">/reservations/*</text>
+
+  <path d="M775 285 L420 445" class="edge"/>
+  <text x="555" y="350" class="edge-label">store state</text>
+  <path d="M875 285 L995 445" class="edge"/>
+  <text x="942" y="345" class="edge-label">enqueue</text>
+  <text x="942" y="365" class="edge-label">DB 4</text>
+  <path d="M925 500 L845 500" class="edge"/>
+  <text x="885" y="470" text-anchor="middle" class="edge-label">consume DB 4</text>
+  <path d="M610 552 L485 552" class="edge"/>
+  <text x="548" y="580" text-anchor="middle" class="edge-label">mark completed</text>
+
+  <text x="60" y="680" class="subtitle">All components are local to one host. PostgreSQL and Redis contain production state and must be preserved.</text>
+</svg>
