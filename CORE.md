@@ -1,13 +1,13 @@
-# Replaybook Infra Core 20260823.0.0
+# Replaybook Infra Core 2026.08.23
 
-Replaybook Infra Core `20260823.0.0` is the canonical public comparison for infrastructure
+Replaybook Infra Core `2026.08.23` is the canonical public comparison for infrastructure
 agents. It answers a narrow question: can an agent investigate and durably
 repair representative stateful Linux incidents under one repeatable contract?
 
 The executable contract is [`benchmark-core.toml`](benchmark-core.toml):
 
 - Benchmark ID: `replaybook-infra-core`
-- Version: `20260823.0.0`
+- Version: `2026.08.23`
 - Tier: `core`
 - Eight scenarios
 - Three attempts per scenario
@@ -59,10 +59,11 @@ pack ID, exact scenario versions, and content hashes for every selected
 scenario remain pinned by Replaybook. This lets the public scenario library
 grow without resetting Core coverage.
 
-Core revisions use `YYYYMMDD.MAJOR.PATCH`. Any change to the selected scenarios,
-their scoring content, attempt count, deadline, required host harness, or
-verification policy creates a new dated revision. Earlier Core artifacts and
-results remain available as versioned history.
+Core revisions use `YYYY.MM.DD`. A second contract release on the same day adds
+a numeric suffix such as `2026.08.23.1`, followed by `.2` if needed. Any change
+to the selected scenarios, their scoring content, attempt count, deadline,
+required host harness, or verification policy creates a new dated revision.
+Earlier Core artifacts and results remain available as versioned history.
 
 ## Run Core
 
