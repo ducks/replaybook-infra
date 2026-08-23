@@ -39,6 +39,7 @@ public incident scenarios and one real-application deployment scenario:
 | `028-nix-store-disk-pressure` | 1 | An unbounded Nix cache refresh exhausts disk and forces a stateful ledger into read-only protection |
 | `029-visual-topology-drift` | 1 | A reservation service has edge routing and queue-consumer drift from its authoritative topology diagram |
 | `030-visual-metrics-regression` | 1 | A report renderer's cache and memory growth must be diagnosed from an operational dashboard |
+| `031-visual-deployment-timeline` | 1 | A checkout fleet must be rolled forward after a deployment timeline shows an irreversible schema migration preceded an automatic rollback |
 
 Four executable tiers support different evaluation budgets:
 

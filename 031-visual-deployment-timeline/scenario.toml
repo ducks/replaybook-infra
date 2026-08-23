@@ -1,0 +1,146 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+image_artifacts = ["deployment-timeline.png"]
+required_services = ["checkout-web-blue.service", "checkout-web-green.service", "checkout-worker.service", "nginx.service"]
+restart_services = ["checkout-web-blue.service", "checkout-web-green.service", "checkout-worker.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["visual deployment timeline", "roll forward answer", "replaybook-timeline-answer"]
+scan_paths = ["/etc/checkout", "/var/lib/checkout"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 200
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/blue/release"
+expected_status = 200
+expected_body = "41"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/instances/green/release"
+expected_status = 200
+expected_body = "41"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/schema"
+expected_status = 200
+expected_body = "42"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/receipts/receipt-before-rollback"
+expected_status = 200
+expected_body = "paid:8421"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/orders/order-accepted-before-rollback"
+expected_status = 409
+expected_body = "pending"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/orders/{id}"
+id_prefix = "preflight-write"
+count = 1
+concurrency = 1
+expected_status = 503
+expected_body = "schema_mismatch"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/blue/release"
+expected_status = 200
+expected_body = "42"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "release_not_converged"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/instances/green/release"
+expected_status = 200
+expected_body = "42"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "release_not_converged"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/schema"
+expected_status = 200
+expected_body = "42"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "schema_state_changed"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/receipts/receipt-before-rollback"
+expected_status = 200
+expected_body = "paid:8421"
+timeout_seconds = 10
+request_timeout_seconds = 2
+failure_category = "receipt_archive_not_preserved"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/orders/order-accepted-before-rollback"
+expected_status = 200
+expected_body = "completed:42"
+timeout_seconds = 45
+request_timeout_seconds = 2
+failure_category = "accepted_order_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/orders/{id}"
+id_prefix = "verification-order-{phase}"
+count = 8
+concurrency = 8
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "verification_orders"
+request_timeout_seconds = 3
+failure_category = "new_orders_not_accepted"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/orders/{id}"
+ids_from = "verification_orders"
+expected_status = 200
+expected_body = "completed:42"
+timeout_seconds = 45
+request_timeout_seconds = 2
+failure_category = "new_orders_not_completed"
