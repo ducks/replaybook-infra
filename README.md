@@ -16,7 +16,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 ## Current status
 
 Replaybook Infra Core `2026.08.23` is the stable, canonical comparison suite. The wider
-scenario library remains a preview benchmark. Release `20260822.1.0` contains eighteen
+scenario library remains a preview benchmark. Release `20260824.0.0` contains nineteen
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
@@ -40,6 +40,7 @@ public incident scenarios and one real-application deployment scenario:
 | `028-nix-store-disk-pressure` | 1 | An unbounded Nix cache refresh exhausts disk and forces a stateful ledger into read-only protection |
 | `029-visual-topology-drift` | 1 | A reservation service has edge routing and queue-consumer drift from its authoritative topology diagram |
 | `030-visual-metrics-regression` | 1 | A report renderer's cache and memory growth must be diagnosed from an operational dashboard |
+| `031-visual-deployment-timeline` | 1 | A checkout fleet must be rolled forward after a deployment timeline shows an irreversible schema migration preceded an automatic rollback |
 
 Four executable tiers support different evaluation budgets:
 
@@ -47,10 +48,10 @@ Four executable tiers support different evaluation budgets:
 |---|---|---:|---|
 | Smoke | `benchmark-smoke.toml` | 3 | Qualify a new model or harness before spending on a wider run |
 | **Core 2026.08.23** | `benchmark-core.toml` | 24 | Canonical model and harness comparison across representative stateful repairs |
-| Full | `benchmark.toml` | 54 | Produce publication-grade evidence across all stable incident scenarios |
+| Full | `benchmark.toml` | 57 | Produce publication-grade evidence across all stable incident scenarios |
 | Frontier | `benchmark-real.toml` | 1 | Exercise the resource-heavy real Discourse bootstrap with a 30-minute deadline |
 
-The separately versioned `benchmark-visual.toml` manifest runs the two visual
+The separately versioned `benchmark-visual.toml` manifest runs the three visual
 incident scenarios three times each. It provides one consistent comparison
 set for image-capable models without mixing text-only incidents into the
 denominator.
@@ -59,8 +60,8 @@ Smoke deliberately combines the basic Nginx incident with interrupted
 deployment and Nix disk-pressure scenarios. Core spans proxying, Redis and
 queue state, rolling deployment, Rust resource leakage, shared uploads, an
 interrupted Discourse deployment, and host disk recovery. Full contains all
-eighteen 15-minute incident scenarios, including topology and operational
-metrics incidents supplied as image artifacts. Frontier runs a real pinned Discourse
+nineteen 15-minute incident scenarios, including topology, operational metrics,
+and deployment-timeline incidents supplied as image artifacts. Frontier runs a real pinned Discourse
 Docker build rather than the synthetic Discourse-shaped services used by the
 incident suite.
 
@@ -71,7 +72,7 @@ to the wider pack does not change this Core revision or invalidate its results.
 Every manifest declares its tier explicitly. Replaybook host harness v23
 records that value in matrix summaries, submission bundles, public APIs, and
 release pages, and refuses to aggregate results across tiers. The tier-aware
-full-tier manifest and scenario-pack revision is `20260822.1.0`. The smoke,
+full-tier manifest and scenario-pack revision is `20260824.0.0`. The smoke,
 core, and frontier selections remain unchanged while referencing the current
 pack revision.
 
