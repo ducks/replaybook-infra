@@ -79,8 +79,9 @@ than being silently mixed.
 Replaybook Infra exposes four separately hashed benchmark contracts:
 
 - **Smoke** uses three scenarios and one attempt to qualify a model or harness.
-- **Core** uses eight representative scenarios and three attempts for routine
-  comparison.
+- **Core 2026.08.23** is the stable canonical suite: eight representative scenarios,
+  three attempts, a 900-second deadline, and host harness v23. Its selected
+  scenario contract is frozen for comparable model and harness results.
 - **Full** uses every stable incident scenario and three attempts for published
   reliability evidence.
 - **Frontier** contains unusually expensive real-system tasks with their own
@@ -89,6 +90,12 @@ Replaybook Infra exposes four separately hashed benchmark contracts:
 Tiers are budget and workflow boundaries, not interchangeable samples. Results
 from smoke, core, full, and frontier are never silently pooled. A published
 comparison names the tier and exact manifest digest that produced it.
+
+The current Core revision deliberately leaves the surrounding pack version unpinned. Replaybook
+still records the actual pack release as provenance and hashes every selected
+scenario. Unrelated additions to the full or visual suites therefore do not
+invalidate it. Changing a selected scenario, execution dimension, or
+verification boundary creates a new DateVer Core revision.
 
 ## Scenario requirements
 
