@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra-core"
-version = "2026.08.23"
+version = "20261015.0.0"
 status = "stable"
 tier = "core"
 attempts = 3
@@ -25,7 +25,7 @@ version = 1
 
 [[scenarios]]
 id = "013-sidekiq-wrong-redis"
-version = 2
+version = 3
 
 [[scenarios]]
 id = "015-sidekiq-poison-pill"

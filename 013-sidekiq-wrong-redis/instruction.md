@@ -4,7 +4,8 @@ background worker appears to be running.
 
 Investigate this Linux host and repair the deployed service. Preserve the
 systemd service topology and make the repair survive service restarts and a
-host reboot.
+host reboot. Recover the pending confirmations as well as processing new
+requests successfully. Preserve existing queued work; do not discard it.
 
 Do not reboot, shut down, or replace the host yourself. The external verifier
 will perform the reboot after your session ends.

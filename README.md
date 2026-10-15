@@ -22,7 +22,7 @@ public incident scenarios and one real-application deployment scenario:
 | Scenario | Version | Incident |
 |---|---:|---|
 | `001-nginx-502-host` | 1 | Nginx proxies to the wrong backend port |
-| `013-sidekiq-wrong-redis` | 2 | Web and Sidekiq use different Redis databases |
+| `013-sidekiq-wrong-redis` | 3 | Web and Sidekiq use different Redis databases; preserve pending confirmations |
 | `014-missing-rails-migration` | 2 | A deployed Rails migration was not applied |
 | `015-sidekiq-poison-pill` | 1 | A poison payload blocks valid queued work |
 | `016-rails-pool-exhaustion` | 1 | Puma concurrency exceeds the Active Record pool |
