@@ -1,5 +1,5 @@
 [scenario]
-version = 2
+version = 3
 nixos_config = "nixos.nix"
 instruction = "instruction.md"
 oracle = "oracle.sh"
@@ -18,7 +18,7 @@ failure_category = "incident_not_reproduced"
 type = "concurrent_http"
 method = "POST"
 path = "/jobs/{id}"
-id_prefix = "preflight"
+id_prefix = "confirmation"
 count = 3
 concurrency = 1
 expected_status = 202
@@ -47,7 +47,7 @@ failure_category = "backlog_not_recovered"
 type = "concurrent_http"
 method = "POST"
 path = "/jobs/{id}"
-id_prefix = "verify-{phase}"
+id_prefix = "confirmation"
 count = 1
 concurrency = 1
 expected_status = 202
