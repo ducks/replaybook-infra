@@ -71,3 +71,11 @@ and probe stay controller-side. No harness-library change is required.
   controller hook, phase plan, certificate observation probe, and expected
   fingerprints remain outside the agent-visible filesystem. The guest-facing
   application/provisioning source is unchanged from the v1 leak-audited build.
+
+- V2 DeepSeek V4.1 Flash smoke (OpenRouter, Claux, high reasoning): reward 1,
+  84-second agent duration, $0.013918048 provider-reported cost. Evidence:
+  `replaybook/jobs/core-tls-v2-smoke-20261024/summary.json`. Immediate,
+  service-restart, and host-reboot checks all passed. Observable tool review
+  confirmed a client CA-bundle update, preserved endpoint certificates, and
+  recovered queued deliveries. No controller file markers appeared in tool
+  outputs. This single smoke establishes usability, not model reliability.

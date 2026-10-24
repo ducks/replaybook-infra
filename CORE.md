@@ -91,3 +91,8 @@ python ../replaybook/integrations/host/run_host_matrix.py \
 Adds TLS trust rotation as a ninth scenario (27 trials per model). This is an
 independent proposal; existing frozen baselines stay unchanged. Combine Core
 candidate selections and choose a final revision before publishing a joint suite.
+
+Validation: `make check` passed with eight TLS/controller tests. The v2 oracle
+and one inexpensive model smoke both passed immediate, service-restart, and
+host-reboot checks. See the scenario contract for retained evidence and the
+v1 verifier-gap history.
