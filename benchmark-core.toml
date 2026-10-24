@@ -54,3 +54,7 @@ version = 1
 [[scenarios]]
 id = "023-auth-secret-rollout"
 version = 1
+
+[[scenarios]]
+id = "016-rails-pool-exhaustion"
+version = 1

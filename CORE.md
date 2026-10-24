@@ -97,3 +97,6 @@ selections and assign the final revision before publishing a joint suite.
 Validation: `make validate`, `make core-check`, and the unchanged scenario v1
 oracle passed on 2026-10-24, including immediate, service-restart, and
 host-reboot checks. Local evidence: `replaybook/jobs/core-auth-oracle-20261024/`.
+
+This integration also adds `016-rails-pool-exhaustion`; its unchanged v1
+oracle passed all three lifecycle phases in `core-pool-oracle-20261024`.
