@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra-core"
-version = "20261015.0.0"
+version = "2026.10.24"
 status = "stable"
 tier = "core"
 attempts = 3
@@ -49,4 +49,8 @@ version = 1
 
 [[scenarios]]
 id = "028-nix-store-disk-pressure"
+version = 1
+
+[[scenarios]]
+id = "023-auth-secret-rollout"
 version = 1
