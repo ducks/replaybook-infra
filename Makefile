@@ -1,6 +1,6 @@
 REPLAYBOOK_DIR ?= ../replaybook
 
-.PHONY: validate check oracle smoke-check core-check full-check frontier-check confirmation-check
+.PHONY: validate check oracle smoke-check core-check full-check frontier-check confirmation-check tls-check
 
 validate:
 	python $(REPLAYBOOK_DIR)/integrations/host/scenario_pack.py --pack . --list
@@ -28,7 +28,10 @@ frontier-check: validate
 confirmation-check: validate
 	REPLAYBOOK_DIR=$(REPLAYBOOK_DIR) python -m unittest discover -s 013-sidekiq-wrong-redis -p 'test_*.py'
 
-check: smoke-check core-check full-check frontier-check confirmation-check
+tls-check: validate
+	REPLAYBOOK_DIR=$(REPLAYBOOK_DIR) python -m unittest discover -s 033-tls-trust-rotation -p 'test_*.py'
+
+check: smoke-check core-check full-check frontier-check confirmation-check tls-check
 
 oracle: full-check
 	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py \

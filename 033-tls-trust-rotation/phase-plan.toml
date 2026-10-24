@@ -1,0 +1,111 @@
+[scenario]
+version = 2
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["delivery-dispatch.service", "delivery-receiver.service", "nginx.service"]
+restart_services = ["delivery-dispatch.service", "delivery-receiver.service", "nginx.service"]
+
+[guest_leak_audit]
+forbidden_strings = ["TLS trust rotation", "stale trust bundle", "replaybook-tls-answer"]
+scan_paths = ["/etc/dispatch", "/var/lib/delivery", "/var/lib/dispatch", "/var/lib/receiver"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_body = "ok"
+timeout_seconds = 60
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/deliveries/{id}"
+id_prefix = "delivery"
+count = 4
+concurrency = 4
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "backlog"
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/deliveries/{id}"
+ids_from = "backlog"
+expected_status = 200
+expected_body = "pending"
+initial_delay_seconds = 4
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[preflight.steps]]
+type = "replay_http"
+path = "/receipts/{id}"
+ids_from = "backlog"
+expected_status = 404
+expected_body = "missing"
+request_timeout_seconds = 2
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/transport/security"
+expected_status = 200
+expected_body = "verified"
+timeout_seconds = 15
+request_timeout_seconds = 5
+failure_category = "tls_peer_validation_disabled"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/deliveries/{id}"
+ids_from = "backlog"
+expected_status = 200
+expected_body = "delivered"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "backlog_not_recovered"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/receipts/{id}"
+ids_from = "backlog"
+expected_status = 200
+expected_body = "delivered"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "backlog_not_recovered"
+
+[[verify.steps]]
+type = "concurrent_http"
+method = "POST"
+path = "/deliveries/{id}"
+id_prefix = "fresh-{phase}"
+count = 4
+concurrency = 4
+expected_status = 202
+expected_body = "accepted"
+record_all_as = "fresh_deliveries"
+failure_category = "new_deliveries_not_accepted"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/deliveries/{id}"
+ids_from = "fresh_deliveries"
+expected_status = 200
+expected_body = "delivered"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "new_deliveries_not_completed"
+
+[[verify.steps]]
+type = "replay_http"
+path = "/receipts/{id}"
+ids_from = "fresh_deliveries"
+expected_status = 200
+expected_body = "delivered"
+timeout_seconds = 30
+request_timeout_seconds = 2
+failure_category = "new_deliveries_not_completed"
