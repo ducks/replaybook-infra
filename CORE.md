@@ -1,6 +1,6 @@
 # Replaybook Infra Core 2026.10.24.2
 
-Replaybook Infra Core `2026.10.24.2` proposes the next public comparison for infrastructure
+Replaybook Infra Core `2026.10.24.2` is the canonical public comparison for infrastructure
 agents. It answers a narrow question: can an agent investigate and durably
 repair representative stateful Linux incidents under one repeatable contract?
 

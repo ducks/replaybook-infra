@@ -15,8 +15,8 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra Core `2026.10.24.2` is the proposed next comparison suite. The wider
-scenario library remains a preview benchmark. This branch proposes pack `20261024.1.1` with twenty
+Replaybook Infra Core `2026.10.24.2` is the current comparison suite. The wider
+scenario library remains a preview benchmark. Pack `20261024.1.1` contains twenty
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
