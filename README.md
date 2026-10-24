@@ -15,8 +15,8 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra Core `2026.08.23` is the stable, canonical comparison suite. The wider
-scenario library remains a preview benchmark. Release `20260824.0.0` contains nineteen
+Replaybook Infra Core `2026.10.24.2` is the current comparison suite. The wider
+scenario library remains a preview benchmark. Pack `20261024.1.1` contains twenty
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
@@ -41,14 +41,15 @@ public incident scenarios and one real-application deployment scenario:
 | `029-visual-topology-drift` | 1 | A reservation service has edge routing and queue-consumer drift from its authoritative topology diagram |
 | `030-visual-metrics-regression` | 1 | A report renderer's cache and memory growth must be diagnosed from an operational dashboard |
 | `031-visual-deployment-timeline` | 1 | A checkout fleet must be rolled forward after a deployment timeline shows an irreversible schema migration preceded an automatic rollback |
+| `033-tls-trust-rotation` | 2 | Recover queued HTTPS deliveries after CA rotation while rejecting invalid peers |
 
 Four executable tiers support different evaluation budgets:
 
 | Tier | Manifest | Trials per model | Intended use |
 |---|---|---:|---|
 | Smoke | `benchmark-smoke.toml` | 3 | Qualify a new model or harness before spending on a wider run |
-| **Core 2026.08.23** | `benchmark-core.toml` | 24 | Canonical model and harness comparison across representative stateful repairs |
-| Full | `benchmark.toml` | 57 | Produce publication-grade evidence across all stable incident scenarios |
+| **Core 2026.10.24.2** | `benchmark-core.toml` | 33 | Canonical model and harness comparison across representative stateful repairs |
+| Full | `benchmark.toml` | 60 | Produce publication-grade evidence across all stable incident scenarios |
 | Frontier | `benchmark-real.toml` | 1 | Exercise the resource-heavy real Discourse bootstrap with a 30-minute deadline |
 
 The separately versioned `benchmark-visual.toml` manifest runs the three visual
@@ -60,21 +61,20 @@ Smoke deliberately combines the basic Nginx incident with interrupted
 deployment and Nix disk-pressure scenarios. Core spans proxying, Redis and
 queue state, rolling deployment, Rust resource leakage, shared uploads, an
 interrupted Discourse deployment, and host disk recovery. Full contains all
-nineteen 15-minute incident scenarios, including topology, operational metrics,
+twenty 15-minute incident scenarios, including topology, operational metrics,
 and deployment-timeline incidents supplied as image artifacts. Frontier runs a real pinned Discourse
 Docker build rather than the synthetic Discourse-shaped services used by the
 incident suite.
 
-[`CORE.md`](CORE.md) defines the frozen Core `2026.08.23` scenario set, execution
+[`CORE.md`](CORE.md) defines the frozen Core `2026.10.24.2` scenario set, execution
 dimensions, official comparison lane, and versioning policy. Adding scenarios
 to the wider pack does not change this Core revision or invalidate its results.
 
 Every manifest declares its tier explicitly. Replaybook host harness v23
 records that value in matrix summaries, submission bundles, public APIs, and
 release pages, and refuses to aggregate results across tiers. The tier-aware
-full-tier manifest and scenario-pack revision is `20260824.0.0`. The smoke,
-core, and frontier selections remain unchanged while referencing the current
-pack revision.
+scenario-pack revision is `20261024.1.1`. The smoke
+and frontier selections remain unchanged; Core adds the three scenarios described below.
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
@@ -211,3 +211,9 @@ failure categories.
 ## License
 
 MIT
+
+Core `2026.10.24.2` adds authentication secret rotation (023), database pool
+exhaustion under concurrent load (016), and TLS trust rotation with durable
+queued delivery (033 v2). Core now selects eleven scenarios for 33 trials per
+model. The two existing incidents remain in Full; the new TLS incident is
+included in both Core and Full. Existing frozen operator cohorts stay unchanged.

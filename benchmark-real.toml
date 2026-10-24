@@ -12,7 +12,7 @@ required_host_harness_version = 23
 [pack]
 path = "."
 id = "ducks/replaybook-infra"
-version = "20261015.0.0"
+version = "20261024.1.1"
 
 [verification]
 require_immediate_recovery = true

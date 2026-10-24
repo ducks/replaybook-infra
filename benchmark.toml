@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra"
-version = "20261015.0.0"
+version = "20261024.1.1"
 status = "preview"
 tier = "full"
 attempts = 3
@@ -12,7 +12,7 @@ required_host_harness_version = 23
 [pack]
 path = "."
 id = "ducks/replaybook-infra"
-version = "20261015.0.0"
+version = "20261024.1.1"
 
 [verification]
 require_immediate_recovery = true
@@ -95,3 +95,7 @@ version = 1
 [[scenarios]]
 id = "031-visual-deployment-timeline"
 version = 1
+
+[[scenarios]]
+id = "033-tls-trust-rotation"
+version = 2

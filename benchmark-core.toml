@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra-core"
-version = "20261015.0.0"
+version = "2026.10.24.2"
 status = "stable"
 tier = "core"
 attempts = 3
@@ -32,6 +32,10 @@ id = "015-sidekiq-poison-pill"
 version = 1
 
 [[scenarios]]
+id = "016-rails-pool-exhaustion"
+version = 1
+
+[[scenarios]]
 id = "017-partial-rails-rollout"
 version = 1
 
@@ -44,9 +48,16 @@ id = "021-discourse-shared-uploads"
 version = 1
 
 [[scenarios]]
+id = "023-auth-secret-rollout"
+version = 1
+[[scenarios]]
 id = "024-discourse-interrupted-deploy"
 version = 1
 
 [[scenarios]]
 id = "028-nix-store-disk-pressure"
 version = 1
+
+[[scenarios]]
+id = "033-tls-trust-rotation"
+version = 2
