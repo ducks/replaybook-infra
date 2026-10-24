@@ -1,13 +1,13 @@
-# Replaybook Infra Core 2026.10.24
+# Replaybook Infra Core 2026.10.24.1
 
-Replaybook Infra Core `2026.10.24` proposes the next public comparison for infrastructure
+Replaybook Infra Core `2026.10.24.1` proposes the next public comparison for infrastructure
 agents. It answers a narrow question: can an agent investigate and durably
 repair representative stateful Linux incidents under one repeatable contract?
 
 The executable contract is [`benchmark-core.toml`](benchmark-core.toml):
 
 - Benchmark ID: `replaybook-infra-core`
-- Version: `2026.10.24`
+- Version: `2026.10.24.1`
 - Tier: `core`
 - Nine scenarios
 - Three attempts per scenario

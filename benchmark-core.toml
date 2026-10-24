@@ -2,7 +2,7 @@ schema_version = 1
 
 [benchmark]
 id = "replaybook-infra-core"
-version = "2026.10.24"
+version = "2026.10.24.1"
 status = "stable"
 tier = "core"
 attempts = 3
