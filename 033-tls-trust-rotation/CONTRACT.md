@@ -31,3 +31,14 @@ As with other root-agent scenarios, an agent can edit application code and
 forge observations. This is an operational repair benchmark, not a tamper-proof
 boundary against malicious root. The security checks test the active transport
 behavior rather than accepting configuration text as evidence.
+
+## Validation evidence
+
+- Static scenario validation and `make check` passed on 2026-10-24.
+- Five real-TLS integration tests cover backlog recovery, fresh work through
+  every controller verification phase, deleted backlog, union trust stores,
+  disabled certificate or hostname validation, unreachable diagnostic peers,
+  and a read-only receipt observation boundary.
+- The final fresh-VM oracle passed immediate, service-restart, and host-reboot
+  checks. Local evidence: `replaybook/jobs/core-tls-oracle-20261024-02/result.json`.
+- Replaybook `make lint` passed. Evidence files stay outside the scenario pack.
