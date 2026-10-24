@@ -31,7 +31,7 @@ provider invocation is available.
 | `021-discourse-shared-uploads` | 1 | Stateful release layout and historical uploads |
 | `024-discourse-interrupted-deploy` | 1 | Interrupted schema and application convergence |
 | `028-nix-store-disk-pressure` | 1 | Host storage pressure and durable Nix remediation |
-| `033-tls-trust-rotation` | 1 | Certificate trust rotation, HTTPS peer validation, and queued delivery recovery |
+| `033-tls-trust-rotation` | 2 | Certificate trust rotation, HTTPS peer validation, and queued delivery recovery |
 
 These scenarios span proxying, queues, deployment convergence, native resource
 management, application state, and host operations. New scenarios mature in

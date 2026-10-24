@@ -1,5 +1,5 @@
 [scenario]
-version = 1
+version = 2
 nixos_config = "nixos.nix"
 instruction = "instruction.md"
 oracle = "oracle.sh"

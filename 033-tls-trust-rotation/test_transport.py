@@ -1,4 +1,6 @@
 """Real TLS negative controls and end-to-end controller checks."""
+import hashlib
+import socket
 import importlib.util
 import os
 from pathlib import Path
@@ -99,7 +101,7 @@ class TransportTests(unittest.TestCase):
         self.bundle.write_bytes((self.pki/'platform.pem').read_bytes())
 
     def test_repair_recovers_exact_backlog_and_fresh_work_all_phases(self):
-        manifest = ROOT/'scenario.toml'
+        manifest = ROOT/'phase-plan.toml'
         phases.run_phase(manifest,'preflight','unused',self.root/'controller')
         self.assertFalse(service.security_status())
         self.repair()
@@ -109,6 +111,31 @@ class TransportTests(unittest.TestCase):
             self.assertEqual(db.execute('SELECT count(*) FROM deliveries WHERE delivered=1').fetchone()[0],16)
         response = phases.request('unused',{'method':'POST'},'/receipts/forged-record')
         self.assertEqual(response.status,405)
+
+    def test_certificate_swap_can_pass_http_but_fails_pinned_controller(self):
+        spec = importlib.util.spec_from_file_location('tls_swap_lifecycle', ROOT/'lifecycle.py')
+        lifecycle = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(lifecycle)
+        def identities():
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            peers = {}
+            for original, actual in self.ports.items():
+                with socket.create_connection(('127.0.0.1',actual),timeout=2) as sock:
+                    with context.wrap_socket(sock,server_hostname='localhost') as secured:
+                        peers[str(original)] = hashlib.sha256(secured.getpeercert(binary_form=True)).hexdigest()
+            return {'peers':peers,'roots':{name:hashlib.sha256((self.pki/name).read_bytes()).hexdigest()
+                    for name in ('platform.pem','archive-root.pem')}}
+        state = self.root/'controller'
+        with patch.object(lifecycle,'remote_identity',side_effect=identities):
+            lifecycle.run('preflight','unused',state,phases)
+            self.ports[4443],self.ports[4444] = self.ports[4444],self.ports[4443]
+            # The old HTTP-only verifier accepts this forbidden repair.
+            phases.run_phase(ROOT/'phase-plan.toml','immediate','unused',state)
+            # The production v2 controller rejects it before HTTP scoring.
+            with self.assertRaisesRegex(RuntimeError,'identities changed'):
+                lifecycle.run('immediate','unused',state,phases)
 
     def test_old_or_union_ca_store_is_rejected(self):
         self.assertFalse(service.security_status())
@@ -138,7 +165,7 @@ class TransportTests(unittest.TestCase):
         self.assertFalse(service.security_status())
 
     def test_deleted_backlog_fails_controller_verifier(self):
-        manifest = ROOT/'scenario.toml'
+        manifest = ROOT/'phase-plan.toml'
         phases.run_phase(manifest,'preflight','unused',self.root/'controller')
         with sqlite3.connect(self.dispatch.database) as db:
             db.execute('DELETE FROM deliveries')
@@ -151,6 +178,47 @@ class TransportTests(unittest.TestCase):
             with self.assertRaises(phases.PhaseFailure) as failed:
                 phases.run_phase(manifest,'immediate','unused',self.root/'controller')
         self.assertEqual(failed.exception.category,'backlog_not_recovered')
+
+
+class IdentityTests(unittest.TestCase):
+    def load_lifecycle(self):
+        spec = importlib.util.spec_from_file_location('tls_lifecycle', ROOT/'lifecycle.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_controller_rejects_certificate_swap_and_ca_relabel(self):
+        from unittest.mock import Mock
+        lifecycle = self.load_lifecycle()
+        pins = {'peers':{'4443':'a'*64,'4444':'b'*64,'4445':'c'*64},
+                'roots':{'platform.pem':'d'*64,'archive-root.pem':'e'*64}}
+        with tempfile.TemporaryDirectory() as temporary:
+            state = Path(temporary)
+            phases_mock = Mock()
+            with patch.object(lifecycle,'remote_identity',return_value=pins):
+                lifecycle.run('preflight','unused',state,phases_mock)
+                lifecycle.run('immediate','unused',state,phases_mock)
+            phases_mock.reset_mock()
+            import copy
+            for group, first, second in (('peers','4443','4444'),('roots','platform.pem','archive-root.pem')):
+                changed = copy.deepcopy(pins)
+                changed[group][first],changed[group][second] = changed[group][second],changed[group][first]
+                with patch.object(lifecycle,'remote_identity',return_value=changed):
+                    with self.assertRaisesRegex(RuntimeError,'identities changed'):
+                        lifecycle.run('host_reboot','unused',state,phases_mock)
+                phases_mock.run_phase.assert_not_called()
+
+    def test_snapshot_selects_its_own_phase_runner(self):
+        lifecycle = self.load_lifecycle()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            scenario = root/'scenario-packs/pack/033-tls-trust-rotation'
+            scenario.mkdir(parents=True)
+            host = root/'host-harness'
+            host.mkdir()
+            (host/'scenario_phase.py').write_text('MARKER = "frozen"\n')
+            with patch.object(lifecycle,'ROOT',scenario):
+                self.assertEqual(lifecycle.phase_runner().MARKER,'frozen')
 
 
 if __name__ == '__main__':

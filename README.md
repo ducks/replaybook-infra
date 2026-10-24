@@ -16,7 +16,7 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 ## Current status
 
 Replaybook Infra Core `2026.10.24` is the proposed next comparison suite. The wider
-scenario library remains a preview benchmark. This branch proposes pack `20261024.1.0` with twenty
+scenario library remains a preview benchmark. This branch proposes pack `20261024.1.1` with twenty
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
@@ -41,7 +41,7 @@ public incident scenarios and one real-application deployment scenario:
 | `029-visual-topology-drift` | 1 | A reservation service has edge routing and queue-consumer drift from its authoritative topology diagram |
 | `030-visual-metrics-regression` | 1 | A report renderer's cache and memory growth must be diagnosed from an operational dashboard |
 | `031-visual-deployment-timeline` | 1 | A checkout fleet must be rolled forward after a deployment timeline shows an irreversible schema migration preceded an automatic rollback |
-| `033-tls-trust-rotation` | 1 | Recover queued HTTPS deliveries after CA rotation while rejecting invalid peers |
+| `033-tls-trust-rotation` | 2 | Recover queued HTTPS deliveries after CA rotation while rejecting invalid peers |
 
 Four executable tiers support different evaluation budgets:
 
@@ -73,7 +73,7 @@ to the wider pack does not change this Core revision or invalidate its results.
 Every manifest declares its tier explicitly. Replaybook host harness v23
 records that value in matrix summaries, submission bundles, public APIs, and
 release pages, and refuses to aggregate results across tiers. The tier-aware
-scenario-pack revision is `20261024.1.0`. The smoke
+scenario-pack revision is `20261024.1.1`. The smoke
 and frontier selections remain unchanged; Core has the additional candidate
 scenario described below.
 

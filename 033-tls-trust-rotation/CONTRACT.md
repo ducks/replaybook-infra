@@ -1,6 +1,6 @@
 # Certificate maintenance and durable webhook delivery
 
-Proposed scenario v1; Core candidate, not part of the existing frozen baseline.
+Proposed scenario v2; Core candidate, not part of the existing frozen baseline.
 
 - Symptom: the dispatcher accepts work and stays healthy, but delivery stalls
   after an internal receiver certificate rotation.
@@ -32,7 +32,7 @@ forge observations. This is an operational repair benchmark, not a tamper-proof
 boundary against malicious root. The security checks test the active transport
 behavior rather than accepting configuration text as evidence.
 
-## Validation evidence
+## Initial v1 validation evidence
 
 - Static scenario validation and `make check` passed on 2026-10-24.
 - Five real-TLS integration tests cover backlog recovery, fresh work through
@@ -42,3 +42,32 @@ behavior rather than accepting configuration text as evidence.
 - The final fresh-VM oracle passed immediate, service-restart, and host-reboot
   checks. Local evidence: `replaybook/jobs/core-tls-oracle-20261024-02/result.json`.
 - Replaybook `make lint` passed. Evidence files stay outside the scenario pack.
+
+## Version 2: preserve transport identities
+
+The v1 model smoke passed the HTTP verifier by swapping the current and retired
+endpoint certificates and continuing to trust the retired CA. This violates the
+retired-chain contract. Its result is retained as evidence of a verifier gap,
+not accepted as validation of v2.
+
+V2 records the exact live peer certificate fingerprints and both CA-file hashes
+in controller-only preflight state. Every verification phase independently
+observes those identities over SSH/TLS before running the HTTP assertions.
+Swapping endpoints, replacing the diagnostic certificates, or relabeling the
+CA files now fails. The reference repair continues to update only client trust.
+The legacy lifecycle hook wraps the typed HTTP plan because the typed runner
+cannot retain or compare independent certificate observations. The HTTP plan
+and probe stay controller-side. No harness-library change is required.
+
+## V2 validation evidence
+
+- `make check` passed with eight tests, including a real TLS reproduction of
+  certificate swapping that passes the v1 HTTP assertions but fails the v2
+  controller. A separate test rejects relabeled CA files and verifies that
+  execution snapshots load their own frozen phase runner.
+- Fresh-VM oracle: `replaybook/jobs/core-tls-v2-oracle-20261024/result.json`
+  reports reward 1 and immediate, service-restart, and host-reboot success.
+- Only `app/service.py` and the provisioning closure enter the guest. The
+  controller hook, phase plan, certificate observation probe, and expected
+  fingerprints remain outside the agent-visible filesystem. The guest-facing
+  application/provisioning source is unchanged from the v1 leak-audited build.
