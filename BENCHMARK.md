@@ -79,7 +79,7 @@ than being silently mixed.
 Replaybook Infra exposes four separately hashed benchmark contracts:
 
 - **Smoke** uses three scenarios and one attempt to qualify a model or harness.
-- **Core 2026.08.23** is the stable canonical suite: eight representative scenarios,
+- **Core 2026.10.24** is the proposed next suite: nine representative scenarios,
   three attempts, a 900-second deadline, and host harness v23. Its selected
   scenario contract is frozen for comparable model and harness results.
 - **Full** uses every stable incident scenario and three attempts for published

@@ -1,22 +1,22 @@
-# Replaybook Infra Core 2026.08.23
+# Replaybook Infra Core 2026.10.24
 
-Replaybook Infra Core `2026.08.23` is the canonical public comparison for infrastructure
+Replaybook Infra Core `2026.10.24` proposes the next public comparison for infrastructure
 agents. It answers a narrow question: can an agent investigate and durably
 repair representative stateful Linux incidents under one repeatable contract?
 
 The executable contract is [`benchmark-core.toml`](benchmark-core.toml):
 
 - Benchmark ID: `replaybook-infra-core`
-- Version: `2026.08.23`
+- Version: `2026.10.24`
 - Tier: `core`
-- Eight scenarios
+- Nine scenarios
 - Three attempts per scenario
 - 900-second agent deadline
 - Replaybook host harness v23
 - Immediate, service-restart, and host-reboot verification
 - Preservation of controller-owned state
 
-Each model configuration therefore produces 24 evaluated trials when every
+Each model configuration therefore produces 27 evaluated trials when every
 provider invocation is available.
 
 ## Frozen scenario set
@@ -24,13 +24,14 @@ provider invocation is available.
 | Scenario | Version | Coverage |
 |---|---:|---|
 | `001-nginx-502-host` | 1 | Reverse proxy diagnosis and systemd deployment |
-| `013-sidekiq-wrong-redis` | 2 | Cross-service configuration and existing queue state |
+| `013-sidekiq-wrong-redis` | 3 | Cross-service configuration and existing queue state |
 | `015-sidekiq-poison-pill` | 1 | Queue recovery without discarding valid work |
 | `017-partial-rails-rollout` | 1 | Mixed-release diagnosis and coordinated rollout |
 | `019-rust-fd-leak` | 1 | Native-service resource exhaustion |
 | `021-discourse-shared-uploads` | 1 | Stateful release layout and historical uploads |
 | `024-discourse-interrupted-deploy` | 1 | Interrupted schema and application convergence |
 | `028-nix-store-disk-pressure` | 1 | Host storage pressure and durable Nix remediation |
+| `033-tls-trust-rotation` | 1 | Certificate trust rotation, HTTPS peer validation, and queued delivery recovery |
 
 These scenarios span proxying, queues, deployment convergence, native resource
 management, application state, and host operations. New scenarios mature in
@@ -60,7 +61,7 @@ scenario remain pinned by Replaybook. This lets the public scenario library
 grow without resetting Core coverage.
 
 Core revisions use `YYYY.MM.DD`. A second contract release on the same day adds
-a numeric suffix such as `2026.08.23.1`, followed by `.2` if needed. Any change
+a numeric suffix such as `2026.10.24.1`, followed by `.2` if needed. Any change
 to the selected scenarios, their scoring content, attempt count, deadline,
 required host harness, or verification policy creates a new dated revision.
 Earlier Core artifacts and results remain available as versioned history.
@@ -84,3 +85,9 @@ python ../replaybook/integrations/host/run_host_matrix.py \
   --benchmark ./benchmark-core.toml \
   --check
 ```
+
+## Proposed Core revision
+
+Adds TLS trust rotation as a ninth scenario (27 trials per model). This is an
+independent proposal; existing frozen baselines stay unchanged. Combine Core
+candidate selections and choose a final revision before publishing a joint suite.
