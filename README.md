@@ -15,8 +15,8 @@ runner, agent adapter contract, result schema, and benchmark publisher.
 
 ## Current status
 
-Replaybook Infra Core `2026.08.23` is the stable, canonical comparison suite. The wider
-scenario library remains a preview benchmark. Release `20260824.0.0` contains nineteen
+Replaybook Infra Core `2026.10.24` is the proposed next comparison suite. The wider
+scenario library remains a preview benchmark. This branch proposes pack `20261024.1.0` with nineteen
 public incident scenarios and one real-application deployment scenario:
 
 | Scenario | Version | Incident |
@@ -47,7 +47,7 @@ Four executable tiers support different evaluation budgets:
 | Tier | Manifest | Trials per model | Intended use |
 |---|---|---:|---|
 | Smoke | `benchmark-smoke.toml` | 3 | Qualify a new model or harness before spending on a wider run |
-| **Core 2026.08.23** | `benchmark-core.toml` | 24 | Canonical model and harness comparison across representative stateful repairs |
+| **Core 2026.10.24** | `benchmark-core.toml` | 27 | Canonical model and harness comparison across representative stateful repairs |
 | Full | `benchmark.toml` | 57 | Produce publication-grade evidence across all stable incident scenarios |
 | Frontier | `benchmark-real.toml` | 1 | Exercise the resource-heavy real Discourse bootstrap with a 30-minute deadline |
 
@@ -65,16 +65,16 @@ and deployment-timeline incidents supplied as image artifacts. Frontier runs a r
 Docker build rather than the synthetic Discourse-shaped services used by the
 incident suite.
 
-[`CORE.md`](CORE.md) defines the frozen Core `2026.08.23` scenario set, execution
+[`CORE.md`](CORE.md) defines the frozen Core `2026.10.24` scenario set, execution
 dimensions, official comparison lane, and versioning policy. Adding scenarios
 to the wider pack does not change this Core revision or invalidate its results.
 
 Every manifest declares its tier explicitly. Replaybook host harness v23
 records that value in matrix summaries, submission bundles, public APIs, and
 release pages, and refuses to aggregate results across tiers. The tier-aware
-full-tier manifest and scenario-pack revision is `20260824.0.0`. The smoke,
-core, and frontier selections remain unchanged while referencing the current
-pack revision.
+scenario-pack revision is `20261024.1.0`. The smoke
+and frontier selections remain unchanged; Core has the additional candidate
+scenario described below.
 
 These scenarios are enough to develop and compare agent harnesses. They are
 not yet a broad infrastructure leaderboard. See [BENCHMARK.md](BENCHMARK.md)
@@ -211,3 +211,6 @@ failure categories.
 ## License
 
 MIT
+
+Core revision proposal: adds `023-auth-secret-rollout` (signing-secret rotation with active-session preservation and revoked-session rejection).
+The incident stays available in Full; Core now selects nine scenarios.
