@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "purpose": "Development validation only; not a ranked model comparison or evidence of greater difficulty than Core.",
+  "benchmark_id": "replaybook-infra-core-hard",
+  "benchmark_version": "2026.10.28.1",
+  "scenario_pack": {
+    "id": "ducks/replaybook-infra",
+    "version": "20261028.0.0"
+  },
+  "validations": [
+    {
+      "kind": "oracle",
+      "host_harness_sha256": "73edafe4911f048610bab5eb9c933be459ded1f11e9c55aa0558ac29cfc5d31b",
+      "claux_binary_sha256": null,
+      "selected_scenarios": [
+        {
+          "id": "034-checkout-dependency-rollout",
+          "version": 1,
+          "pack_id": "ducks/replaybook-infra",
+          "sha256": "95640e2b15e90c92653f661877a2e6067a600a7c8da626ef513fce5e0af3726d"
+        },
+        {
+          "id": "035-notification-outbox-rollout",
+          "version": 1,
+          "pack_id": "ducks/replaybook-infra",
+          "sha256": "2854bfca4dc7ad276752c73f9cbddb734fea7149d9c5060c13c5ee141c3e91e3"
+        },
+        {
+          "id": "036-reservation-write-contention",
+          "version": 1,
+          "pack_id": "ducks/replaybook-infra",
+          "sha256": "b471b1a0775155b973f38b84fc8aa3a5ca77f38f36c75b4ead0450bb31867e8c"
+        }
+      ],
+      "trials": [
+        {
+          "scenario": "034-checkout-dependency-rollout",
+          "scenario_version": 1,
+          "harness_version": 23,
+          "provider": null,
+          "model": "oracle",
+          "reasoning_effort": null,
+          "agent_timeout_seconds": 900,
+          "agent_duration_seconds": 1,
+          "trial_status": "evaluated",
+          "reward": 1,
+          "verification": {
+            "immediate_http": true,
+            "service_restart": true,
+            "host_reboot": true,
+            "after_agent_timeout": null
+          },
+          "result_sha256": "a7c3cbcbb3ce2c2fba4a3478ebd0ae1dea43358ffebcf3c28cf7d405f389cfa3",
+          "usage": null
+        },
+        {
+          "scenario": "035-notification-outbox-rollout",
+          "scenario_version": 1,
+          "harness_version": 23,
+          "provider": null,
+          "model": "oracle",
+          "reasoning_effort": null,
+          "agent_timeout_seconds": 900,
+          "agent_duration_seconds": 0,
+          "trial_status": "evaluated",
+          "reward": 1,
+          "verification": {
+            "immediate_http": true,
+            "service_restart": true,
+            "host_reboot": true,
+            "after_agent_timeout": null
+          },
+          "result_sha256": "9c15237f4a139358321e0634fc8fb2ef502a4eefafa1a206d43f4cf1c243de04",
+          "usage": null
+        },
+        {
+          "scenario": "036-reservation-write-contention",
+          "scenario_version": 1,
+          "harness_version": 23,
+          "provider": null,
+          "model": "oracle",
+          "reasoning_effort": null,
+          "agent_timeout_seconds": 900,
+          "agent_duration_seconds": 1,
+          "trial_status": "evaluated",
+          "reward": 1,
+          "verification": {
+            "immediate_http": true,
+            "service_restart": true,
+            "host_reboot": true,
+            "after_agent_timeout": null
+          },
+          "result_sha256": "f56001ec0a186a593e2038096a9075de88b84dae52d6dcae16a4bde78960efb1",
+          "usage": null
+        }
+      ]
+    },
+    {
+      "kind": "model-smoke",
+      "host_harness_sha256": "c4f52ca5bdc9c09822e7a255a435d1c436199b6f0e3bcb4f20701569b230d63e",
+      "claux_binary_sha256": "b959ef677ff7b75dea88b1915cde894eb7dc223e0cb985fbb6c61858d2e24e41",
+      "selected_scenarios": [
+        {
+          "id": "034-checkout-dependency-rollout",
+          "version": 1,
+          "pack_id": "ducks/replaybook-infra",
+          "sha256": "95640e2b15e90c92653f661877a2e6067a600a7c8da626ef513fce5e0af3726d"
+        },
+        {
+          "id": "035-notification-outbox-rollout",
+          "version": 1,
+          "pack_id": "ducks/replaybook-infra",
+          "sha256": "2854bfca4dc7ad276752c73f9cbddb734fea7149d9c5060c13c5ee141c3e91e3"
+        },
+        {
+          "id": "036-reservation-write-contention",
+          "version": 1,
+          "pack_id": "ducks/replaybook-infra",
+          "sha256": "b471b1a0775155b973f38b84fc8aa3a5ca77f38f36c75b4ead0450bb31867e8c"
+        }
+      ],
+      "trials": [
+        {
+          "scenario": "034-checkout-dependency-rollout",
+          "scenario_version": 1,
+          "harness_version": 23,
+          "provider": "openrouter",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoning_effort": "high",
+          "agent_timeout_seconds": 900,
+          "agent_duration_seconds": 61,
+          "trial_status": "evaluated",
+          "reward": 1,
+          "verification": {
+            "immediate_http": true,
+            "service_restart": true,
+            "host_reboot": true,
+            "after_agent_timeout": null
+          },
+          "result_sha256": "8731c96fa0c9cd771cc64e24e8853e10c86e73c9f78e58af27ead63fafb847e9",
+          "usage": {
+            "rounds": 19,
+            "tool_calls": 27,
+            "input_tokens": 22453,
+            "output_tokens": 7172,
+            "cache_read_tokens": 239916,
+            "cache_creation_tokens": 0,
+            "cost_usd": 0.011747257199999998,
+            "cost_source": "provider"
+          }
+        },
+        {
+          "scenario": "035-notification-outbox-rollout",
+          "scenario_version": 1,
+          "harness_version": 23,
+          "provider": "openrouter",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoning_effort": "high",
+          "agent_timeout_seconds": 900,
+          "agent_duration_seconds": 53,
+          "trial_status": "evaluated",
+          "reward": 1,
+          "verification": {
+            "immediate_http": true,
+            "service_restart": true,
+            "host_reboot": true,
+            "after_agent_timeout": null
+          },
+          "result_sha256": "d60de28294faf47196855a5f9b2693564242bce42d1153a05f4db41d649b76f7",
+          "usage": {
+            "rounds": 15,
+            "tool_calls": 23,
+            "input_tokens": 25345,
+            "output_tokens": 7539,
+            "cache_read_tokens": 190976,
+            "cache_creation_tokens": 0,
+            "cost_usd": 0.0086648804,
+            "cost_source": "provider"
+          }
+        },
+        {
+          "scenario": "036-reservation-write-contention",
+          "scenario_version": 1,
+          "harness_version": 23,
+          "provider": "openrouter",
+          "model": "deepseek/deepseek-v4.1-flash-1017",
+          "reasoning_effort": "high",
+          "agent_timeout_seconds": 900,
+          "agent_duration_seconds": 96,
+          "trial_status": "evaluated",
+          "reward": 1,
+          "verification": {
+            "immediate_http": true,
+            "service_restart": true,
+            "host_reboot": true,
+            "after_agent_timeout": null
+          },
+          "result_sha256": "62f865e40d579f75a059ecea0d0d96abcda29d12c585a4f9d06a30761eb583a6",
+          "usage": {
+            "rounds": 37,
+            "tool_calls": 45,
+            "input_tokens": 23372,
+            "output_tokens": 14998,
+            "cache_read_tokens": 793344,
+            "cache_creation_tokens": 0,
+            "cost_usd": 0.012353855999999998,
+            "cost_source": "provider"
+          }
+        }
+      ]
+    }
+  ]
+}

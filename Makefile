@@ -37,3 +37,17 @@ oracle: full-check
 	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py \
 		--benchmark ./benchmark.toml \
 		--oracle
+
+.PHONY: core-hard-check core-hard-oracle
+core-hard-check: validate
+	python -m unittest discover -s tests -p 'test_core_hard.py'
+	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py \
+		--benchmark ./benchmark-core-hard.toml --check
+
+core-hard-oracle: core-hard-check
+	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py \
+		--scenario-pack . \
+		--scenario 034-checkout-dependency-rollout \
+		--scenario 035-notification-outbox-rollout \
+		--scenario 036-reservation-write-contention \
+		--oracle --attempts 1 --concurrency 1 --base-port 24000
