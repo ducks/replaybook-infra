@@ -217,3 +217,11 @@ exhaustion under concurrent load (016), and TLS trust rotation with durable
 queued delivery (033 v2). Core now selects eleven scenarios for 33 trials per
 model. The two existing incidents remain in Full; the new TLS incident is
 included in both Core and Full. Existing frozen operator cohorts stay unchanged.
+
+## Experimental Core Hard
+
+[Core Hard](CORE-HARD.md) adds three separate candidate incidents covering a
+partial dependency rollout, pending notification recovery, and concurrent
+reservation accounting. Its [manifest](benchmark-core-hard.toml) is independent
+of frozen Core. Run `make core-hard-check` and `make core-hard-oracle` to validate
+it before model comparisons; the existing Core suite is unchanged.
