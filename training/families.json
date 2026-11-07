@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "purpose": "Development taxonomy; assign train/test roles before collecting training examples",
+  "families": {
+    "dns-service-discovery": [
+      "041-dns-resolver-drift"
+    ],
+    "storage-access-control": [
+      "042-receipt-directory-ownership"
+    ]
+  },
+  "status": "DNS v1 and storage v2 reference repairs pass immediate, restart and reboot checks; no model trials or training examples collected"
+}

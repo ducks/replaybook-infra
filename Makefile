@@ -51,3 +51,6 @@ core-hard-oracle: core-hard-check
 		--scenario 035-notification-outbox-rollout \
 		--scenario 036-reservation-write-contention \
 		--oracle --attempts 1 --concurrency 1 --base-port 24000
+
+training-check:
+	$(MAKE) -C training REPLAYBOOK_DIR=$(abspath $(REPLAYBOOK_DIR)) check test
