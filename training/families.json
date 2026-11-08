@@ -3,11 +3,13 @@
   "purpose": "Development taxonomy; assign train/test roles before collecting training examples",
   "families": {
     "dns-service-discovery": [
-      "041-dns-resolver-drift"
+      "041-dns-resolver-drift",
+      "043-dns-host-override"
     ],
     "storage-access-control": [
-      "042-receipt-directory-ownership"
+      "042-receipt-directory-ownership",
+      "044-receipt-reader-group"
     ]
   },
-  "status": "Reference repairs and one Particle-1 high-reasoning trial per scenario pass immediate, restart and reboot checks; no approved training examples"
+  "status": "All four reference repairs validated; original variants have one passing Particle trial each; new variants await model pilot"
 }

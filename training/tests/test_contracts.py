@@ -53,9 +53,10 @@ class ContractControls(unittest.TestCase):
     def test_dns_rejects_partial_fix_that_breaks_unrelated_resolution(self):
         def responses(method,path):
             return phase.Response(200, {"/health":"inventory-ready\n", "/resolve/inventory":"127.0.0.1\n", "/resolve/metrics":"127.0.0.1\n"}[path])
-        with self.assertRaises(phase.PhaseFailure) as error:
-            self.run_contract("041-dns-resolver-drift", responses)
-        self.assertEqual(error.exception.category,"unrelated_dns_broken")
+        for scenario in ["041-dns-resolver-drift", "043-dns-host-override"]:
+            with self.subTest(scenario=scenario), self.assertRaises(phase.PhaseFailure) as error:
+                self.run_contract(scenario, responses)
+            self.assertEqual(error.exception.category,"unrelated_dns_broken")
 
     def test_storage_rejects_root_world_writable_and_lost_history_shortcuts(self):
         for bad_path,bad_body,category in [("/identity","root","service_identity_changed"),("/storage-policy","unsafe","storage_permissions_unsafe"),("/history","empty","historical_receipts_lost")]:

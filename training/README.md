@@ -2,14 +2,18 @@
 
 This self-contained pack starts two new incident families without changing the
 existing Core manifest or its frozen cohort. Pack ID: `ducks/replaybook-sre-families`.
-Version: `20261107.0.1`. DNS is version 1; storage is version 2 after strengthening its cross-phase receipt checks.
+Version: `20261108.0.1`. Original DNS is version 1; original storage is version 2.
+The host-override variant is version 1; reader-group is version 2 after adding a
+bounded listener-readiness wait before strict verification.
 
 | Scenario | Family | Operational failure | Required recovery |
 | --- | --- | --- | --- |
 | 041 DNS resolver drift | dns-service-discovery | A boot-applied resolver policy points the gateway at the wrong local nameserver | Real name-based inventory access and unrelated metrics resolution survive policy reapplication/restart/reboot |
+| 043 DNS host override | dns-service-discovery | A stale hosts policy masks a healthy DNS server | Normal inventory lookup and unrelated resolution survive policy reapplication/restart/reboot |
+| 044 Receipt reader group | storage-access-control | Ingestion succeeds but the separate reader runs with an incompatible group | Previously accepted and fresh receipts are readable across restarts, with separate identities and restrictive permissions |
 | 042 Receipt directory ownership | storage-access-control | A storage policy assigns the write directory to the wrong owner | Non-root writes and retries recover, history and accepted data survive, permissions stay restrictive |
 
-These are new development incidents, not established harder benchmarks and not
+These are development incidents, not established harder benchmarks and not
 training examples yet. `families.json` provides taxonomy. Do not randomly split
 attempts between training and testing. Reserve families/variants before collecting
 model examples, and record the resulting assignment in the curation split plan.
@@ -50,8 +54,19 @@ The receipt application test exercises actual file permissions and writes. These
 are not a claim that a root-capable malicious agent cannot forge an application;
 observable contracts, instructions and retained trajectories must be reviewed too.
 
-Next variants should introduce causally distinct incidents, for example a stale
-host override or exhausted inodes. Do not simply rename services or change ports.
+The host-override variant keeps DNS healthy and explicitly uses files-before-DNS
+resolution. Its boot policy reapplies the stale override, so editing only the live
+hosts file is insufficient. The reader-group variant creates actual receipts during
+preflight, before repair. A separate read-only process uses a persistent group
+configuration. Verification checks both identities, directory mode 0750, file mode
+0640 and ownership/group, historical contents, all previously accepted records,
+fresh writes and reader HTTP write rejection. Restart/reboot checks reuse opaque
+controller state. The original applications and their reference repairs remain unchanged.
+
+Use `benchmark-variants.toml` to run just the two new cases; the development
+manifest includes all four. These cases exercise additional causes but are not
+claimed to be harder without comparative evidence. Future variants could cover
+exhausted inodes. Do not simply rename services or change ports.
 Kubernetes/network-policy incidents remain future work; no Kubernetes dependency
 has been added to this initial pack. Reference validation does not require paid model tests.
 
@@ -66,3 +81,12 @@ Sanitized evidence and runtime hashes are in
 `validation/20261107-particle-pilot.json`; raw results and trajectories remain local.
 This establishes a successful pilot, not scenario difficulty or comparative model
 performance. These results do not change Core or approve trajectories for training.
+
+## Variant reference validation
+
+The 2026-11-08 reference run passed both new variants through immediate, service
+restart and host reboot checks. Evidence: `validation/20261108-variants-oracle.json`.
+All 11 local contract tests pass. The initial reader v1 run exposed a transient
+502 after restart; v2 waits up to 20 seconds for each health endpoint before
+strict identity, permissions and persistence checks. That earlier failed run is
+retained locally. No data checks are relaxed by the readiness wait.
