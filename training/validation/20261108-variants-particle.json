@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "purpose": "Development variant validation; not a Core leaderboard release or difficulty calibration",
+  "started_at": "2026-11-08T17:59:25.421577Z",
+  "finished_at": "2026-11-08T18:06:43.172864Z",
+  "source_summary_sha256": "0129e5dd8a5174453d68269a4ce4b41d3723aba1b3f9450197d63f863aff1aef",
+  "execution_snapshot": {
+    "schema_version": 1,
+    "host_harness_sha256": "c4f52ca5bdc9c09822e7a255a435d1c436199b6f0e3bcb4f20701569b230d63e",
+    "scenario_packs": [
+      {
+        "id": "ducks/replaybook-sre-families",
+        "version": "20261108.0.1",
+        "sha256": "a6e86c0c452014ae45589b3483960253b9402a47307c2f63f87f73cb0e101a6c",
+        "git_commit": "f34706be05eaab9f5fdc979bee5e615fc1c03720"
+      }
+    ],
+    "selected_scenarios": [
+      {
+        "id": "043-dns-host-override",
+        "version": 1,
+        "pack_id": "ducks/replaybook-sre-families",
+        "sha256": "e6d0e9bab0d2d33c45363ce6fc8a1facf8f75c8f3af21a759902d7d7cce3fd98"
+      },
+      {
+        "id": "044-receipt-reader-group",
+        "version": 2,
+        "pack_id": "ducks/replaybook-sre-families",
+        "sha256": "6c83b3b0714e11b1bed7d3afd7ca75c494cf2a39c796ecda28a06bf8afcfbf6d"
+      }
+    ],
+    "agent_adapter_sha256": null,
+    "agent_payload_sha256": null,
+    "agent_config_sha256": null,
+    "agent_env_sha256": null,
+    "claux_binary_sha256": "b959ef677ff7b75dea88b1915cde894eb7dc223e0cb985fbb6c61858d2e24e41",
+    "benchmark_manifest_sha256": "814a3e2c36f74e5edf0cf3c316519c42aaa2b0fcb468e6de4dc683699cc08f4d"
+  },
+  "runtime_files": [
+    {
+      "path": "043-dns-host-override/instruction.md",
+      "sha256": "ee358acf94ac583d9bc1eae2c348a8017319b6cb9708c76ca9bfd7ce12c6e530"
+    },
+    {
+      "path": "043-dns-host-override/nixos.nix",
+      "sha256": "9606ffaf36f51955fe02f2ccae43ab41e6784c67da34b45dae924ace40ac7bc1"
+    },
+    {
+      "path": "043-dns-host-override/oracle.sh",
+      "sha256": "661d06a39793ae8c3a51502146a9fd8f7e7b985d1a3d2705b66d54122a146413"
+    },
+    {
+      "path": "043-dns-host-override/scenario.toml",
+      "sha256": "6eaf30cb42ca05dbdf9327ad39a4587eb6b2b65687081c009a307c79a3880cb4"
+    },
+    {
+      "path": "044-receipt-reader-group/check.py",
+      "sha256": "da009616deceba670c1d6c9e3c631d763c79ab0059fff1dde2cba0d76f7552a2"
+    },
+    {
+      "path": "044-receipt-reader-group/instruction.md",
+      "sha256": "afb8febeb448adbbc63d4051d9445d7591d91988e1df5f69abf74449ad2fb8f1"
+    },
+    {
+      "path": "044-receipt-reader-group/nixos.nix",
+      "sha256": "23c4de111d77a50e2614e7848f928cf904266c24c3efcc6ccf2901b36aaf85e6"
+    },
+    {
+      "path": "044-receipt-reader-group/oracle.sh",
+      "sha256": "c96335fdffe3b786a2ac6bb0d1e3795c708f0b6916955224893679d64d847c64"
+    },
+    {
+      "path": "044-receipt-reader-group/preflight.sh",
+      "sha256": "3aff4e529bfa5352bcf1b469f96c5a116733b12231557a229099a265b92b3ded"
+    },
+    {
+      "path": "044-receipt-reader-group/scenario.conf",
+      "sha256": "18d81a2e447c9f970ee8885e4eb8e41ed97f3ccad005e721a9cfaa23bc9bab20"
+    },
+    {
+      "path": "044-receipt-reader-group/verify.sh",
+      "sha256": "7dd98b29856d4db903185020a9650551a487228e096b2822192a0fe1f1e3b338"
+    },
+    {
+      "path": "apps/discovery.py",
+      "sha256": "7946d82df409fd7c1667395d374ddf3249f2ee89da394cbf83cc5ff96c9afb21"
+    },
+    {
+      "path": "apps/receipts.py",
+      "sha256": "8dccd349e5cb7ecd0aec74c713f6387dcde447c2576aa44b5dc46d1f67bf7fc9"
+    },
+    {
+      "path": "apps/shared_receipts.py",
+      "sha256": "f5af12e6e84cf672253eb2e05cca4ff9b213b549a881275d727383673fc4ac61"
+    },
+    {
+      "path": "worker/base.nix",
+      "sha256": "148ebd6776c760a210589258d5c79887036695eeb295b7acaae7c03aa70af370"
+    }
+  ],
+  "totals": {
+    "trials": 2,
+    "evaluated": 2,
+    "unavailable": 0,
+    "passed": 2,
+    "failed": 0,
+    "durable_repairs_after_timeout": 0,
+    "pass_rate": 1.0,
+    "median_duration_seconds": 117.0,
+    "known_cost_usd": 0.020178468,
+    "cost_reported_trials": 2,
+    "input_tokens": 185820,
+    "output_tokens": 19623,
+    "cache_read_tokens": 358656,
+    "cache_creation_tokens": 0,
+    "cache_read_reported_trials": 2,
+    "cache_creation_reported_trials": 2,
+    "usage_reported_trials": 2,
+    "recording_reported_trials": 2,
+    "median_model_rounds": 14.0,
+    "median_model_duration_seconds": 50.341,
+    "median_tool_calls": 19.5,
+    "median_tool_duration_seconds": 65.223,
+    "median_first_non_read_only_tool_seconds": 1.3835,
+    "median_post_first_non_read_only_seconds": 114.30600000000001
+  },
+  "runs": [
+    {
+      "scenario": "043-dns-host-override",
+      "scenario_version": 1,
+      "agent": "claux",
+      "provider": "openrouter",
+      "model": "particle-ai/particle-1",
+      "reasoning_effort": "high",
+      "agent_duration_seconds": 48,
+      "reward": 1,
+      "verification": {
+        "immediate_http": true,
+        "service_restart": true,
+        "host_reboot": true,
+        "after_agent_timeout": null
+      },
+      "usage": {
+        "rounds": 14,
+        "tool_calls": 18,
+        "input_tokens": 72152,
+        "output_tokens": 7028,
+        "cache_read_tokens": 126208,
+        "cache_creation_tokens": 0,
+        "cost_usd": 0.007500224,
+        "cost_source": "provider"
+      },
+      "result_sha256": "cadf13d084654497ac96e45f53f13658824a39f46a4627f61c688ded16bab999",
+      "transcript_sha256": "50887948d03528390d9aeb13276f536ecae43da815674dc49563d0daa42eb50d"
+    },
+    {
+      "scenario": "044-receipt-reader-group",
+      "scenario_version": 2,
+      "agent": "claux",
+      "provider": "openrouter",
+      "model": "particle-ai/particle-1",
+      "reasoning_effort": "high",
+      "agent_duration_seconds": 186,
+      "reward": 1,
+      "verification": {
+        "immediate_http": true,
+        "service_restart": true,
+        "host_reboot": true,
+        "after_agent_timeout": null
+      },
+      "usage": {
+        "rounds": 14,
+        "tool_calls": 21,
+        "input_tokens": 113668,
+        "output_tokens": 12595,
+        "cache_read_tokens": 232448,
+        "cache_creation_tokens": 0,
+        "cost_usd": 0.012678244000000002,
+        "cost_source": "provider"
+      },
+      "result_sha256": "91de5c9e61d83a9bed9df54afd6ea81a50d3daedd61358f823946217148e59a8",
+      "transcript_sha256": "bb5e02497e8d1eeea8d4bf2c4467051659f4c13a12068ca97c47074980ac8024"
+    }
+  ],
+  "notes": [
+    "Earlier reader v1 reference run encountered a transient 502 immediately after restart; v2 adds bounded health readiness before strict data checks. The failed development artifact is retained.",
+    "Single-attempt development evidence does not establish comparative performance or difficulty.",
+    "No public benchmark publication or training rights approval."
+  ],
+  "trajectory_review": {
+    "hidden_resource_references_in_tool_inputs": [],
+    "application_code_edits_observed": false,
+    "repairs": {
+      "043-dns-host-override": "Removed stale inventory hosts override in persistent policy and reapplied it.",
+      "044-receipt-reader-group": "Added read-only access/default ACLs for the existing reader group on directory and existing receipts. Verified ACL inheritance, unchanged data hashes, restrictive modes and service restarts. Alternative to changing reader group; satisfies behavioral contract."
+    },
+    "scope": "Reviewed recorded tool inputs and lifecycle evidence; not a proof against malicious root-capable agents."
+  }
+}

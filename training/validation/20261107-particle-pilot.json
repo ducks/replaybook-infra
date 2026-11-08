@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "purpose": "Single-attempt development pilot; not a Core leaderboard release or difficulty calibration",
+  "started_at": "2026-11-07T21:13:31.981766Z",
+  "finished_at": "2026-11-07T21:18:53.902406Z",
+  "source_summary_sha256": "9f2154787b4770fa764686fa1bdea98ebd912a677a82cc67b602baa5ac15f0e8",
+  "execution_snapshot": {
+    "schema_version": 1,
+    "host_harness_sha256": "c4f52ca5bdc9c09822e7a255a435d1c436199b6f0e3bcb4f20701569b230d63e",
+    "scenario_packs": [
+      {
+        "id": "ducks/replaybook-sre-families",
+        "version": "20261107.0.1",
+        "sha256": "04024aa643375445f060489f24138ed94a9bcd90dbb9248c7d8b36ff32019395",
+        "git_commit": "9d6584f11d8cece877b5ff86c0f5d243badc369c"
+      }
+    ],
+    "selected_scenarios": [
+      {
+        "id": "041-dns-resolver-drift",
+        "version": 1,
+        "pack_id": "ducks/replaybook-sre-families",
+        "sha256": "4b394d053a2d5cfc3918ab363fd989f73ad9543cb4846c379acd09551e529933"
+      },
+      {
+        "id": "042-receipt-directory-ownership",
+        "version": 2,
+        "pack_id": "ducks/replaybook-sre-families",
+        "sha256": "7966963c44f3216b8df18cf138caccbf3bb7974e7ca98f239c730b34134ded0f"
+      }
+    ],
+    "agent_adapter_sha256": null,
+    "agent_payload_sha256": null,
+    "agent_config_sha256": null,
+    "agent_env_sha256": null,
+    "claux_binary_sha256": "b959ef677ff7b75dea88b1915cde894eb7dc223e0cb985fbb6c61858d2e24e41",
+    "benchmark_manifest_sha256": "3a0177009c7147040164de10fd4fbb5892d984a7379bec1422a466674928172b"
+  },
+  "agent": {
+    "name": "claux",
+    "adapter": "builtin:claux",
+    "payload": null,
+    "provider": "openrouter"
+  },
+  "attempts_per_scenario": 1,
+  "totals": {
+    "trials": 2,
+    "evaluated": 2,
+    "unavailable": 0,
+    "passed": 2,
+    "failed": 0,
+    "durable_repairs_after_timeout": 0,
+    "pass_rate": 1.0,
+    "median_duration_seconds": 63.5,
+    "known_cost_usd": 0.026116228000000002,
+    "cost_reported_trials": 2,
+    "input_tokens": 380908,
+    "output_tokens": 13495,
+    "cache_read_tokens": 107776,
+    "cache_creation_tokens": 0,
+    "cache_read_reported_trials": 2,
+    "cache_creation_reported_trials": 2,
+    "usage_reported_trials": 2,
+    "recording_reported_trials": 2,
+    "median_model_rounds": 15.0,
+    "median_model_duration_seconds": 55.311499999999995,
+    "median_tool_calls": 22.0,
+    "median_tool_duration_seconds": 6.5655,
+    "median_first_non_read_only_tool_seconds": 2.314,
+    "median_post_first_non_read_only_seconds": 59.647499999999994
+  },
+  "runs": [
+    {
+      "scenario": "041-dns-resolver-drift",
+      "scenario_version": 1,
+      "model": "particle-ai/particle-1",
+      "reasoning_effort": "high",
+      "agent_duration_seconds": 72,
+      "reward": 1,
+      "verification": {
+        "immediate_http": true,
+        "service_restart": true,
+        "host_reboot": true,
+        "after_agent_timeout": null
+      },
+      "usage": {
+        "rounds": 17,
+        "tool_calls": 26,
+        "input_tokens": 294715,
+        "output_tokens": 8020,
+        "cache_read_tokens": 66048,
+        "cache_creation_tokens": 0,
+        "cost_usd": 0.018943894000000003,
+        "cost_source": "provider"
+      },
+      "result_sha256": "a4b0107aa96f6c408a0f91e45c5ce10816cdf3e60a0bb8ff04dab7145a7f184b",
+      "transcript_sha256": "7f130db703da011cc3100e707b58b69535425c3d3eb879eec33875068cc45a05"
+    },
+    {
+      "scenario": "042-receipt-directory-ownership",
+      "scenario_version": 2,
+      "model": "particle-ai/particle-1",
+      "reasoning_effort": "high",
+      "agent_duration_seconds": 55,
+      "reward": 1,
+      "verification": {
+        "immediate_http": true,
+        "service_restart": true,
+        "host_reboot": true,
+        "after_agent_timeout": null
+      },
+      "usage": {
+        "rounds": 13,
+        "tool_calls": 18,
+        "input_tokens": 86193,
+        "output_tokens": 5475,
+        "cache_read_tokens": 41728,
+        "cache_creation_tokens": 0,
+        "cost_usd": 0.007172334,
+        "cost_source": "provider"
+      },
+      "result_sha256": "02c446d0db18ffaaf7a5c6ee2202711b3842bf152611c967d0ce827e9b2ac3e3",
+      "transcript_sha256": "5d1367e8f2b7ed8d54721e0e8baf4e97e987b7fba362e32f37c9988ba50c3c6c"
+    }
+  ],
+  "runtime_files": [
+    {
+      "path": "041-dns-resolver-drift/instruction.md",
+      "sha256": "1bf3ed372436dd72eb89c55bd6b49972635c749db1c14b6efac4a64b8c7ae97e"
+    },
+    {
+      "path": "041-dns-resolver-drift/nixos.nix",
+      "sha256": "339e4e3b23d05b7a9ca706700b277661a659c9ce1500537851acc0aedc136929"
+    },
+    {
+      "path": "041-dns-resolver-drift/oracle.sh",
+      "sha256": "062364e620791246c74059f7547770eb01f090fb4106c19f8f509da9ea623a75"
+    },
+    {
+      "path": "041-dns-resolver-drift/scenario.toml",
+      "sha256": "6eaf30cb42ca05dbdf9327ad39a4587eb6b2b65687081c009a307c79a3880cb4"
+    },
+    {
+      "path": "042-receipt-directory-ownership/check.py",
+      "sha256": "b14f87e203e6ea61bb78f435792b7c73588ac46fb0c063428964a4fd05cb57ee"
+    },
+    {
+      "path": "042-receipt-directory-ownership/instruction.md",
+      "sha256": "4dab6e77dd2b9977d5a622c97c5072656cc6bf0c0c978abe4b7b5a3f6a510077"
+    },
+    {
+      "path": "042-receipt-directory-ownership/nixos.nix",
+      "sha256": "a04e05706c4b3787fec2158b4995cbc03b3cfd905c027566d8240ed04c07b411"
+    },
+    {
+      "path": "042-receipt-directory-ownership/oracle.sh",
+      "sha256": "a14bb62bf2904ff93a0f1042cb15faa00e887e4f137b8a6a0bbcd85a6eb17dfb"
+    },
+    {
+      "path": "042-receipt-directory-ownership/preflight.sh",
+      "sha256": "3aff4e529bfa5352bcf1b469f96c5a116733b12231557a229099a265b92b3ded"
+    },
+    {
+      "path": "042-receipt-directory-ownership/scenario.conf",
+      "sha256": "42d84f11cfce97e0559b13fa871e53c02457e076829de4cc5336d85da37a6edc"
+    },
+    {
+      "path": "042-receipt-directory-ownership/verify.sh",
+      "sha256": "7dd98b29856d4db903185020a9650551a487228e096b2822192a0fe1f1e3b338"
+    },
+    {
+      "path": "apps/discovery.py",
+      "sha256": "7946d82df409fd7c1667395d374ddf3249f2ee89da394cbf83cc5ff96c9afb21"
+    },
+    {
+      "path": "apps/receipts.py",
+      "sha256": "8dccd349e5cb7ecd0aec74c713f6387dcde447c2576aa44b5dc46d1f67bf7fc9"
+    },
+    {
+      "path": "worker/base.nix",
+      "sha256": "148ebd6776c760a210589258d5c79887036695eeb295b7acaae7c03aa70af370"
+    }
+  ],
+  "limitations": [
+    "One model and one attempt per scenario; no difficulty or comparative performance conclusion.",
+    "No training rights approval or public benchmark publication."
+  ]
+}

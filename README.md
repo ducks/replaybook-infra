@@ -225,3 +225,9 @@ partial dependency rollout, pending notification recovery, and concurrent
 reservation accounting. Its [manifest](benchmark-core-hard.toml) is independent
 of frozen Core. Run `make core-hard-check` and `make core-hard-oracle` to validate
 it before model comparisons; the existing Core suite is unchanged.
+
+## Training/development incident families
+
+The independent [SRE families pack](training/README.md) starts DNS/service-discovery
+and storage-access-control incidents. It has its own pack identity, manifest and
+reference-repair validation. Frozen Core and its scenario selection are unchanged.

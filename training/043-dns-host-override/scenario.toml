@@ -1,0 +1,45 @@
+[scenario]
+version = 1
+nixos_config = "nixos.nix"
+instruction = "instruction.md"
+oracle = "oracle.sh"
+required_services = ["inventory-dns.service", "inventory.service", "discovery-web.service", "nginx.service"]
+restart_services = ["resolver-policy.service", "inventory-dns.service", "inventory.service", "discovery-web.service", "nginx.service"]
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/backend/health"
+expected_body = "inventory-ready\n"
+timeout_seconds = 30
+failure_category = "backend_not_ready"
+
+[[preflight.steps]]
+type = "wait_http"
+path = "/health"
+expected_status = 503
+expected_body = "upstream discovery unavailable\n"
+timeout_seconds = 30
+request_timeout_seconds = 5
+failure_category = "incident_not_reproduced"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/health"
+expected_body = "inventory-ready\n"
+timeout_seconds = 30
+request_timeout_seconds = 5
+failure_category = "inventory_discovery_failed"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/resolve/inventory"
+expected_body = "127.0.0.1\n"
+timeout_seconds = 10
+failure_category = "inventory_dns_failed"
+
+[[verify.steps]]
+type = "wait_http"
+path = "/resolve/metrics"
+expected_body = "127.0.0.9\n"
+timeout_seconds = 10
+failure_category = "unrelated_dns_broken"
