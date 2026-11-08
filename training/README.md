@@ -90,3 +90,31 @@ All 11 local contract tests pass. The initial reader v1 run exposed a transient
 502 after restart; v2 waits up to 20 seconds for each health endpoint before
 strict identity, permissions and persistence checks. That earlier failed run is
 retained locally. No data checks are relaxed by the readiness wait.
+
+## Variant Particle pilot
+
+On 2026-11-08, the same frozen Claux agent with Particle-1/OpenRouter, high
+reasoning and one 900-second attempt per case passed both new variants:
+
+| Scenario | Agent time | Provider-reported cost | Immediate/restart/reboot |
+| --- | ---: | ---: | --- |
+| 043 DNS host override v1 | 48 seconds | $0.007500224 | PASS / PASS / PASS |
+| 044 Receipt reader group v2 | 186 seconds | $0.012678244 | PASS / PASS / PASS |
+
+Total: $0.020178468, with cost reported for both attempts. Sanitized source hashes,
+runtime hashes, usage and verification results are retained in
+`validation/20261108-variants-particle.json`. Raw trajectories remain local.
+
+The DNS repair removed the shadowing entry from persistent hosts policy. The
+reader repair used read-only access/default ACLs for its existing group instead
+of changing the configured group. It preserved separate identities, restrictive
+modes, historical data and receipt access after restarts/reboot. This is an
+acceptable alternative under the behavioral contract, not an exact-match oracle
+requirement. No application edits or hidden-resource references were observed
+in the recorded tool inputs. Root-capable adversarial forgery remains outside
+this limited trajectory review.
+
+All four cases now have one passing Particle trial each. There is no evidence
+here for a difficulty ranking or general model comparison; the original and
+variant pilots also use separate manifest/pack versions. Nothing was added to
+Core, published, or approved for training by these pilots.

@@ -11,5 +11,5 @@
       "044-receipt-reader-group"
     ]
   },
-  "status": "All four reference repairs validated; original variants have one passing Particle trial each; new variants await model pilot"
+  "status": "All four reference repairs and one Particle high-reasoning trial per scenario pass immediate, service restart and reboot checks; no approved training examples"
 }
