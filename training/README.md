@@ -53,4 +53,16 @@ observable contracts, instructions and retained trajectories must be reviewed to
 Next variants should introduce causally distinct incidents, for example a stale
 host override or exhausted inodes. Do not simply rename services or change ports.
 Kubernetes/network-policy incidents remain future work; no Kubernetes dependency
-has been added to this initial pack. No paid model tests are part of validation.
+has been added to this initial pack. Reference validation does not require paid model tests.
+
+## Particle pilot
+
+On 2026-11-07, Particle-1 through OpenRouter and the frozen Claux agent passed
+one attempt per scenario, including immediate, service restart and host reboot
+checks. DNS took 72 seconds ($0.018943894); receipt ownership took 55 seconds
+($0.007172334). Total provider-reported cost: $0.026116228, reported for both trials.
+
+Sanitized evidence and runtime hashes are in
+`validation/20261107-particle-pilot.json`; raw results and trajectories remain local.
+This establishes a successful pilot, not scenario difficulty or comparative model
+performance. These results do not change Core or approve trajectories for training.

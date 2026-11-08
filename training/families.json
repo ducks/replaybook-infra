@@ -9,5 +9,5 @@
       "042-receipt-directory-ownership"
     ]
   },
-  "status": "DNS v1 and storage v2 reference repairs pass immediate, restart and reboot checks; no model trials or training examples collected"
+  "status": "Reference repairs and one Particle-1 high-reasoning trial per scenario pass immediate, restart and reboot checks; no approved training examples"
 }
