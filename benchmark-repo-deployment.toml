@@ -1,0 +1,25 @@
+schema_version = 1
+
+[benchmark]
+id = "replaybook-repo-deployment"
+version = "20261118.0.0"
+status = "experimental"
+tier = "frontier"
+attempts = 1
+agent_timeout_seconds = 1800
+required_host_harness_version = 23
+
+[pack]
+path = "."
+id = "ducks/replaybook-infra"
+version = "20261118.0.0"
+
+[verification]
+require_immediate_recovery = true
+require_service_restart = true
+require_host_reboot = true
+preserve_controller_state = true
+
+[[scenarios]]
+id = "039-repo-to-deployment"
+version = 1

@@ -231,3 +231,12 @@ it before model comparisons; the existing Core suite is unchanged.
 The independent [SRE families pack](training/README.md) starts DNS/service-discovery
 and storage-access-control incidents. It has its own pack identity, manifest and
 reference-repair validation. Frozen Core and its scenario selection are unchanged.
+
+## Repo-to-deployment experiment
+
+[039-repo-to-deployment](039-repo-to-deployment/README.md) gives an agent an
+unfamiliar source repository and README, then verifies its deployed workflows,
+data preservation, worker supervision and repeatable installation. The separate
+[benchmark-repo-deployment.toml](benchmark-repo-deployment.toml) uses a 30-minute
+budget and one attempt; it is not part of the existing Core/visual cohorts.
+Expanded pack version: `20261118.0.0`.

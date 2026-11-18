@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "scenario": "039-repo-to-deployment",
+  "version": 1,
+  "pack_version": "20261118.0.0",
+  "host_harness_version": 23,
+  "oracle": {
+    "artifacts": "jobs/repo-deployment-oracle-final-20261118",
+    "result_sha256": "b116baa6d64de215b4f27948d7d8b7dea654be7dfd27f63882a70f5959a2d6f4",
+    "reward": 1,
+    "verification": {
+      "immediate_http": true,
+      "service_restart": true,
+      "host_reboot": true,
+      "after_agent_timeout": null
+    },
+    "preserved_imports_after_reboot": 13
+  },
+  "controls": {
+    "artifacts": "jobs/repo-deployment-controls-v2-20261118",
+    "review_sha256": "7765e2d19cac18f227b912d14ac45a173893fb992cf9d007f3d28c4af6ce3823",
+    "results": [
+      {
+        "model": "control/alternative",
+        "reward": 1,
+        "expectation_met": true,
+        "result_sha256": "f4356289db5af7d05cc8bbb29a922852470bd657b044b3d4059c2bbe48a5a253"
+      },
+      {
+        "model": "control/noop",
+        "reward": 0,
+        "expectation_met": true,
+        "result_sha256": "da7cd7decfe47ba8ff4627977334c6190cf9aadba101c343ad695be982698f98"
+      },
+      {
+        "model": "control/api-only",
+        "reward": 0,
+        "expectation_met": true,
+        "result_sha256": "ecec10f910e8c022a40f45aae9babbcae411ed16a287973d13e32a7fa8edc4a9"
+      },
+      {
+        "model": "control/discard-history",
+        "reward": 0,
+        "expectation_met": true,
+        "result_sha256": "1ae88f1efb4a796214770f0b2789e3f209146e7d82130ae474fe11e18a41a3ee"
+      },
+      {
+        "model": "control/ephemeral-state",
+        "reward": 0,
+        "expectation_met": true,
+        "result_sha256": "0b5baf64b4768a8a347063ca455c5443b9f5d4336d4ae305a9ee754a60fcac7a"
+      }
+    ],
+    "passed": true
+  },
+  "commands": [
+    "make deployment-check REPLAYBOOK_DIR=../replaybook-publish-crouton",
+    "make deployment-oracle REPLAYBOOK_DIR=../replaybook-publish-crouton",
+    "make deployment-controls REPLAYBOOK_DIR=../replaybook-publish-crouton"
+  ],
+  "checks": {
+    "application_unittests": 2,
+    "verifier_unittests": 6,
+    "manifest_preflight": "PASS",
+    "pack_discovery": "PASS",
+    "canonical_full_lifecycle": "PASS",
+    "alternative_layout_full_lifecycle": "PASS"
+  },
+  "development_findings": [
+    "The initial reference tried the NixOS-owned read-only /etc/systemd/system path. It was corrected to a persistent systemd control path, documented in the task, and the full oracle rerun passed.",
+    "The first controls had two adapter setup failures (alternative unit name generation and root-owned SQLite sidecars). Those runs were retained and excluded as valid negative evidence. The corrected controls ran in fresh VMs.",
+    "The API-only control was rejected by the live-worker PID check before heartbeat expiry, rather than the anticipated readiness timeout. Review now accepts either specific missing-worker failure and preserves the original validation.json; the grader and raw results were not changed.",
+    "Controls ran before two additional bad-token HTTP assertions were added. The final fresh oracle exercises those assertions; existing negative data/state/supervision checks are unchanged."
+  ],
+  "limitations": [
+    "No model difficulty result yet; all validation used local reference/control scripts with zero inference calls.",
+    "Runbook contents are only minimally checked. Backup/restore onto a second host and zero-downtime upgrades are not evaluated.",
+    "Root-level malicious reimplementations are not exhaustively excluded. Private runtime source hashes, random work, independent database/file observations and lifecycle checks reject the tested shortcuts."
+  ],
+  "source_sha256": {
+    "README.md": "cad6a0033293ad49cd621e01043f7dd123e3ca6759d7918081482060244e06d4",
+    "controller.py": "de8c6fdb5c2e5d23496616faab685aead249726e60f2e4cd86b6b2928766ab49",
+    "controls/adapter.sh.in": "7fbc17f2ac852210e900b590343bfd3fa2c5afa750e2b94919b511a7cd05a7e0",
+    "instruction.md": "90cc07632482ade32c86d3e5e7139106f54ef702b585afb950b2581fc1c58343",
+    "nixos.nix": "dfb7b604830a2c3e5b4c89f7de8574fe2fe1de77843606816c92dbbbd0e571ff",
+    "oracle.sh": "eed1e650b509f0d0ee46bf5468d81384541e05b6ac94e79c5d11b97e1c0e54e7",
+    "preflight.sh": "31446546b26184d267d6fbb7e2f438a4e625e8ba8f595e16570f54fee1fca8e3",
+    "repo/Makefile": "0e33e6dbab83501c4962b75f99b6622828129919e3deced2374bda58665f423d",
+    "repo/README.md": "0a203039b09e5319b7233b4318c04de0452c029c84a1265bc8f32ccf8c3b8880",
+    "repo/ledgerlens.py": "cccbc78c3b9858974f7e5fcc1778a94b2bf406b6264937aec562888dafb74ed2",
+    "repo/test_ledgerlens.py": "c095ca6b3335bdaab3f08d53bf2f56cd852cae1bcd47e88d4fb7b5d6823cd97e",
+    "scenario.conf": "224baa42f6384e794cdd09262eb5db6cbd5adc9c0f9d6be4db0d226603fd4b57",
+    "verify.sh": "a68b80ac5dc7189c1dbea8a4d2447614a5f124c585eef8fd144bad0e02772da5"
+  }
+}
