@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "$REPLAYBOOK_MODEL" != control/noop ]]; then
+ python - <<'PYCODE'
+import base64,os,pathlib
+text=base64.b64decode('@ORACLE@').decode()
+if os.environ['REPLAYBOOK_MODEL']=='control/alternative':
+ text=text.replace('ledgerlens-api','receipts-api').replace('ledgerlens-worker','receipts-worker').replace('ledgerlens-$kind','receipts-$kind').replace('8080','8091')
+p=pathlib.Path('/tmp/reference-control.sh');p.write_text(text);p.chmod(0o700)
+PYCODE
+ /tmp/reference-control.sh
+ case "$REPLAYBOOK_MODEL" in
+  control/api-only) systemctl stop ledgerlens-worker; systemctl disable ledgerlens-worker || true ;;
+  control/discard-history)
+   systemctl stop ledgerlens-api ledgerlens-worker
+   python - <<'PYCODE'
+import sqlite3
+with sqlite3.connect('/var/lib/ledgerlens/ledger.sqlite3') as db:
+ db.execute('DELETE FROM imports WHERE id=(SELECT id FROM imports ORDER BY id LIMIT 1)')
+PYCODE
+   chown -R ledgerlens:ledgerlens /var/lib/ledgerlens
+   systemctl start ledgerlens-api ledgerlens-worker
+   ;;
+  control/ephemeral-state)
+   systemctl stop ledgerlens-api ledgerlens-worker
+   cp -a /var/lib/ledgerlens /tmp/ledgerlens
+   sed -i 's|/var/lib/ledgerlens|/tmp/ledgerlens|g' /etc/ledgerlens/runtime.env
+   python - <<'PYCODE'
+import json,pathlib
+p=pathlib.Path('/etc/ledgerlens/deployment.json');d=json.loads(p.read_text())
+for k in ['database','uploads']:d[k]=d[k].replace('/var/lib/ledgerlens','/tmp/ledgerlens')
+p.write_text(json.dumps(d))
+PYCODE
+   systemctl start ledgerlens-api ledgerlens-worker
+   ;;
+ esac
+fi
+python - <<'PYCODE'
+import json,os,pathlib
+result={'schema_version':1,'harness':'deployment-control','model':os.environ['REPLAYBOOK_MODEL'],'outcome':{'status':'completed','result':'Local validation control'},'usage':None}
+pathlib.Path(os.environ['REPLAYBOOK_RESULT_FILE']).write_text(json.dumps(result))
+PYCODE

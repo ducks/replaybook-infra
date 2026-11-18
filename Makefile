@@ -54,3 +54,15 @@ core-hard-oracle: core-hard-check
 
 training-check:
 	$(MAKE) -C training REPLAYBOOK_DIR=$(abspath $(REPLAYBOOK_DIR)) check test
+
+.PHONY: deployment-check deployment-oracle deployment-controls
+deployment-check: validate
+	python -m unittest discover -s 039-repo-to-deployment/repo -p 'test_*.py'
+	python -m unittest discover -s tests -p 'test_repo_deployment.py'
+	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py --benchmark benchmark-repo-deployment.toml --check
+
+deployment-oracle: deployment-check
+	python $(REPLAYBOOK_DIR)/integrations/host/run_host_matrix.py --benchmark benchmark-repo-deployment.toml --oracle --concurrency 1 --base-port 28600
+
+deployment-controls: deployment-check
+	python tests/validate_repo_deployment.py --replaybook-dir $(REPLAYBOOK_DIR)
